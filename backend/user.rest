@@ -1,0 +1,29 @@
+GET http://localhost:5000/api/v1/users/
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsIm5hbWUiOiJhZG1pbiIsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwiaWF0IjoxNjk4MjExOTEyLCJleHAiOjE2OTgyOTgzMTJ9.EDjKDyY7zavUAQ53WCyF5AnACW103efaXQt250A43t0 
+
+
+
+###
+POST http://localhost:5000/api/v1/users/
+Content-Type: application/json
+
+{
+    "name": "admin",
+    "email": "admin@admin.com",
+    "password": "admin",
+    "confirmPassword": "admin",
+    "gender": "male"
+}
+
+###
+POST http://localhost:5000/api/v1/login/
+Content-Type: application/json
+
+{
+    "email": "admin@admin.com",
+    "password": "admin"
+}
+
+###
+
+DELETE http://localhost:5000/api/v1/logout/ 

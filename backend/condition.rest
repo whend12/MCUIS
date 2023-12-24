@@ -1,0 +1,25 @@
+
+POST http://localhost:5000/api/v1/condition/
+Content-Type: application/json
+
+{
+    "name": "MCHC",
+    "lowerLimit": "32",
+    "upperLimit": "36",
+    "satuan": "g/dL",
+    "status": "Abnormal",
+    "saran": "Konsumsi daging merah, sereal, kacang-kacangan, sayur berwarna gelap (Bayam dan Brokoli)"
+
+}
+
+
+```
+
+### Get all condition
+GET http://localhost:5000/api/v1/condition/
+Content-Type: application/json
+
+{
+  
+}
+

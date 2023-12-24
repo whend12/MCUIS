@@ -1,0 +1,52 @@
+// Endpoint for Create Patient
+
+POST http://localhost:5000/api/v1/patient/
+Content-Type: application/json
+
+{
+    "name": "jabberwock",
+    "age": 12,
+    "gender": "Male",
+    "phone": "0812655685",
+    "address": "Permata  Timur",
+    "birthdate": "2002-02-18",
+    "bloodtype": "C"
+}
+###
+// Endpoint for Edit Patient by id
+PUT http://localhost:5000/api/v1/patient/18
+Content-Type: application/json
+
+{
+    "name": "Wendy Gardiel",
+    "age": 15,
+    "gender": "Male",
+    "phone": "0812655685",
+    "address": "Permata  Timur 3",
+    "birthdate": "2002-02-12",
+    "bloodtype": "B"
+}
+
+###
+// Endpoint for get All Patient
+GET http://localhost:5000/api/v1/patient/
+Content-Type: application/json
+
+{
+
+}
+
+
+
+###
+// Endpoint for Delete Patient by ID
+DELETE  http://localhost:5000/api/v1/patient/18
+Content-Type: application/json
+
+{
+
+}
+
+
+
+

@@ -1,0 +1,12 @@
+1. Asam Urat
+2. Cholesterol HDL
+3. Cholesterol LDL Direk
+4. Cholesterol Total
+5. Gamma GT
+6. GOT
+7. GPT
+8. Hematologi Lengkap
+9.Kreatinin
+10. Trigliserida
+11. Urine Lengkap
+12. Glukosa Puasa

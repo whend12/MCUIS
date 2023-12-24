@@ -1,0 +1,6 @@
+ToDO
+
+- Handling Error in Patient Register backend and FrontEnd ( Per Fields)
+- Antrian saat ini dan Antrian sudah sampai no urut berapa (belum fix)
+- Page Client untuk ambil antrian 
+- Front end untuk Patient
