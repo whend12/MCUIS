@@ -7,6 +7,7 @@ import PatientForm from "./pages/PatientForm.jsx";
 import PatientList from "./pages/PatientList.jsx";
 import Sidebar from "./components/Sidebar.jsx";
 import FormMCU from "./pages/FormMcu.jsx";
+import FormMCU2 from "./pages/FormMcu2.jsx";
 import Queue from "./pages/Queue.jsx";
 
 const App = () => {
@@ -35,6 +36,7 @@ const App = () => {
           <Route path="lists" element={<PatientList />} />
           <Route path="register" element={<PatientForm />} />
           <Route path="form-mcu/:id" element={<FormMCU />} />
+          <Route path="form-mcu2/:id" element={<FormMCU2 />} />
         </Route>
       </Routes>
     </BrowserRouter>

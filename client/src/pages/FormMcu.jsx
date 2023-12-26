@@ -73,48 +73,102 @@ const PatientPhysiqueForm = () => {
     setFormData(newFormData);
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, patientId) => {
     e.preventDefault();
+
+    // Validasi data sebelum mengirim
+    const requiredFields = [
+      "bmi",
+      "weight",
+      "height",
+      "bloodPressure",
+      "heartRate",
+      "complaint",
+      "distanceVisionExamination",
+      "distanceVisionExaminationWithGlasses",
+      "nearVisionExamination",
+      "bloodExamination",
+      // Tambahkan field lain yang diperlukan di sini
+    ];
+
+    const emptyFields = [];
+    requiredFields.forEach((field) => {
+      if (!formData[field] || formData[field].trim() === "") {
+        emptyFields.push(field);
+      }
+    });
+
+    if (emptyFields.length > 0) {
+      console.error(
+        `Please fill in the following required fields: ${emptyFields.join(
+          ", "
+        )}`
+      );
+      return;
+    }
+
+    const isValid = requiredFields.every(
+      (field) => formData[field] && formData[field].trim() !== ""
+    );
+
+    if (!isValid) {
+      console.error("Please fill in all required fields.");
+      return;
+    }
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/v1/patient-physique",
-        formData, // Kirim data formulir sebagai JSON ke backend
+        `http://localhost:5000/api/v1/patient-physique/${patientId}`,
+        formData,
         {
           headers: {
             "Content-Type": "application/json",
           },
         }
       );
-      if (response.ok) {
-        // Data berhasil disimpan, lakukan sesuatu
+
+      if (response.status === 200 || response.status === 201) {
         console.log("Data submitted successfully!");
         // Lakukan redirect atau tampilkan pesan sukses
       } else {
-        // Tangani kesalahan jika ada
-        console.error("Failed to submit data.");
+        console.error("Failed to submit data:", response.data);
+        // Tampilkan pesan kesalahan yang diberikan oleh server (jika ada)
       }
     } catch (error) {
-      console.error("Error submitting data: ", error);
+      if (error.response) {
+        // Respons dari server, tetapi bukan status sukses
+        console.error(
+          "Failed to submit data:",
+          error.response.status,
+          error.response.data
+        );
+        // Tampilkan pesan kesalahan yang diberikan oleh server (jika ada)
+      } else if (error.request) {
+        // Permintaan terkirim tetapi tidak ada respons (misalnya, tidak ada koneksi internet)
+        console.error("No response received:", error.request);
+        // Tampilkan pesan kesalahan terkait dengan permintaan yang dikirim
+      } else {
+        // Kesalahan lain yang terjadi dalam proses pengiriman permintaan
+        console.error("Error submitting data:", error.message);
+        // Tampilkan pesan kesalahan umum yang terkait dengan pengiriman permintaan
+      }
     }
   };
 
   useEffect(() => {
-    // Lakukan permintaan ke backend untuk mendapatkan data pasien berdasarkan ID
-    // Ganti 'fetchPatientData' dengan fungsi yang benar-benar mengambil data dari backend
     const fetchPatientData = async () => {
       try {
-        // Contoh endpoint backend untuk mengambil data pasien berdasarkan ID
-        const response = await fetch(`localhost:5000/api/v1/patients/${id}`);
+        const response = await fetch(
+          `http://localhost:5000/api/v1/patient/${id}`
+        );
         const patientData = await response.json();
 
-        // Set nilai formulir dengan data yang diambil dari backend
         setFormData({
           bmi: patientData.bmi,
           weight: patientData.weight,
           height: patientData.height,
-          bloodPressure: patientData.blood_pressure,
-          heartRate: patientData.heart_rate,
+          bloodPressure: patientData.bloodPressure,
+          heartRate: patientData.heartRate,
           temperature: patientData.temperature,
           respiration: patientData.respiration,
           complaint: patientData.complaint,
@@ -129,12 +183,11 @@ const PatientPhysiqueForm = () => {
         });
       } catch (error) {
         console.error("Error fetching patient data: ", error);
-        // Handle errors, tampilkan pesan atau tindakan yang sesuai
       }
     };
 
-    fetchPatientData(); // Panggil fungsi untuk mengambil data pasien saat komponen dimuat
-  }, [id]); // Tambahkan 'id' sebagai dependensi, sehingga fetch terpanggil ketika ID berubah
+    fetchPatientData();
+  }, [id]);
 
   return (
     <div className="w-full mx-auto p-6 rounded-md bg-white shadow-md">
@@ -182,9 +235,9 @@ const PatientPhysiqueForm = () => {
               </label>
               <InputField
                 id="blood_pressure"
-                name="blood_pressure"
+                name="bloodPressure"
                 placeholder="100/80"
-                value={formData.blood_pressure}
+                value={formData.bloodPressure}
                 onChange={handleChange}
               />
             </div>
@@ -196,7 +249,7 @@ const PatientPhysiqueForm = () => {
                 id="heart_rate"
                 name="heart_rate"
                 placeholder="80"
-                value={formData.heart_rate}
+                value={formData.heartRate}
                 onChange={handleChange}
               />
             </div>
@@ -226,10 +279,7 @@ const PatientPhysiqueForm = () => {
             </div>
           </div>
 
-          {/* Add other input fields and radio buttons similarly */}
-
           <div className="md:col-span-1 border-2 rounded-md p-4">
-            {/* Complaint */}
             <div className="max-w-md mb-6">
               <label
                 htmlFor="complaint"
@@ -373,6 +423,27 @@ const PatientPhysiqueForm = () => {
                 placeholder="Keterangan/ Description"
                 value={formData.hearingExamination}
                 onChange={handleChange}
+              />
+            </div>
+            <div className="max-w-xs pb-5">
+              <label htmlFor="bloodExamination" className="block mb-1">
+                Blood Examination:
+              </label>
+              <RadioButton
+                id="bloodExaminationNormal"
+                name="bloodExamination"
+                value="Normal"
+                checked={formData.bloodExamination === "Normal"}
+                onChange={handleChange}
+                label="Normal"
+              />
+              <RadioButton
+                id="bloodExaminationAbnormal"
+                name="bloodExamination"
+                value="Abnormal"
+                checked={formData.bloodExamination === "Abnormal"}
+                onChange={handleChange}
+                label="Abnormal"
               />
             </div>
           </div>

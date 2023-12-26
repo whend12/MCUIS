@@ -3,17 +3,15 @@ POST http://localhost:5000/api/v1/condition/
 Content-Type: application/json
 
 {
-    "name": "MCHC",
-    "lowerLimit": "32",
-    "upperLimit": "36",
-    "satuan": "g/dL",
-    "status": "Abnormal",
-    "saran": "Konsumsi daging merah, sereal, kacang-kacangan, sayur berwarna gelap (Bayam dan Brokoli)"
-
+    "name": "distanceVisionExamination",
+    "lowerLimit": "20/20",
+    "upperLimit": "20/90",
+    "satuan": "meter",
+    "status": "Normal",
+    "saran": "Konsul Ke Dokter Spesialis Mata"
 }
 
 
-```
 
 ### Get all condition
 GET http://localhost:5000/api/v1/condition/

@@ -4,10 +4,11 @@ import UserRoutes from "./Routes/User.js";
 import QueueRoutes from "./Routes/Queue.js";
 import PatientRoutes from "./Routes/Patient.js";
 import ConditionRoutes from "./Routes/Condition.js";
-import HasilAnalisisRoutes from "./Models/HasilAnalisModel.js";
-import PatientLabRoutes from "./Models/PatientLabModel.js";
-import PatientPhysiqueRoutes from "./Models/PatientPhysiqueModel.js";
-import PatientPhysiqueTwoRoutes from "./Models/PatientPhysiqueTwoModel.js";
+import ConditionTwo from "./Routes/ConditionTwo.js";
+import HasilAnalisisRoutes from "./Routes/HasilAnalisis.js";
+import PatientLabRoutes from "./Routes/PatientLab.js";
+import PatientPhysiqueRoutes from "./Routes/PatientPhysique.js";
+import PatientPhysiqueTwoRoutes from "./Routes/PatientPhysiqueTwo.js";
 import dotenv from "dotenv";
 import cors from "cors";
 import cookieParser from "cookie-parser";
@@ -35,7 +36,8 @@ app.use(
   HasilAnalisisRoutes,
   PatientLabRoutes,
   PatientPhysiqueRoutes,
-  PatientPhysiqueTwoRoutes
+  PatientPhysiqueTwoRoutes,
+  ConditionTwo
 );
 
 app.listen(5000, () => console.log("Server Running at port 5000... "));

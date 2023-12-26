@@ -11,7 +11,9 @@ const PatientList = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState(null);
-  const patientsPerPage = 5; // Number of patients to display per page
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editPatientData, setEditPatientData] = useState({});
+  const patientsPerPage = 5;
 
   useEffect(() => {
     getPatients();
@@ -64,6 +66,25 @@ const PatientList = () => {
     setCurrentPage(newPage);
   };
 
+  const openEditModal = (patient) => {
+    setEditPatientData(patient);
+    setShowEditModal(true);
+  };
+
+  const editPatient = async () => {
+    try {
+      const response = await axios.put(
+        `http://localhost:5000/api/v1/patient/${editPatientData.id}`,
+        editPatientData
+      );
+      console.log("Updated patient:", response.data);
+      setShowEditModal(false);
+      getPatients();
+    } catch (error) {
+      console.error("Error editing patient:", error);
+    }
+  };
+
   return (
     <section className="antialiased bg-gray-100 text-gray-600 min-h-screen w-full px-0">
       <div className="flex flex-col justify-center h-full p-5">
@@ -100,6 +121,65 @@ const PatientList = () => {
                     </th>
                   </tr>
                 </thead>
+                {showEditModal && (
+                  <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-gray-800 bg-opacity-50">
+                    <div className="modal-container bg-white w-96 rounded shadow-lg z-50 overflow-y-auto p-6">
+                      <h2 className="text-2xl font-bold mb-4">Edit Patient</h2>
+
+                      <input
+                        type="text"
+                        placeholder="Name"
+                        className="border rounded-md p-2 mb-2 w-full"
+                        value={editPatientData.name || ""}
+                        onChange={(e) =>
+                          setEditPatientData({
+                            ...editPatientData,
+                            name: e.target.value,
+                          })
+                        }
+                      />
+
+                      <input
+                        type="text"
+                        placeholder="Gender"
+                        className="border rounded-md p-2 mb-2 w-full"
+                        value={editPatientData.gender || ""}
+                        onChange={(e) =>
+                          setEditPatientData({
+                            ...editPatientData,
+                            gender: e.target.value,
+                          })
+                        }
+                      />
+
+                      <input
+                        type="text"
+                        placeholder="Age"
+                        className="border rounded-md p-2 mb-2 w-full"
+                        value={editPatientData.age || ""}
+                        onChange={(e) =>
+                          setEditPatientData({
+                            ...editPatientData,
+                            age: e.target.value,
+                          })
+                        }
+                      />
+
+                      <button
+                        className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
+                        onClick={editPatient}
+                      >
+                        Save
+                      </button>
+                      <button
+                        className="ml-2 text-gray-600 hover:underline"
+                        onClick={() => setShowEditModal(false)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
                 <tbody className="text-sm divide-y divide-gray-100">
                   {currentPatients.map((patient, index) => (
                     <tr key={index}>
@@ -141,7 +221,10 @@ const PatientList = () => {
                         </button>
                       </td>
                       <td className="p-2 whitespace-nowrap rounded-md border-inherit">
-                        <button className="text-yellow-500 hover:underline">
+                        <button
+                          onClick={() => openEditModal(patient)} // Memanggil fungsi openEditModal saat ikon diklik
+                          className="text-yellow-500 hover:underline"
+                        >
                           <Pencil />
                         </button>
                       </td>
@@ -164,23 +247,13 @@ const PatientList = () => {
                             </Menu.Button>
                           </div>
                           <Menu.Items className="absolute right-0 z-10 w-32 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg focus:outline-none">
-                            {currentPatients.map((patient) => (
-                              <Menu.Item key={patient.id}>
-                                {({ active }) => (
-                                  <Link
-                                    to={`/dashboard/form-mcu/${patient.id}`}
-                                  >
-                                    <button
-                                      className={`${
-                                        active ? "bg-gray-100" : ""
-                                      } flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100`}
-                                    >
-                                      Fill Form MCU for {patient.name}
-                                    </button>
-                                  </Link>
-                                )}
-                              </Menu.Item>
-                            ))}
+                            <Menu.Item>
+                              <Link to={`/dashboard/form-mcu/${patient.id}`}>
+                                <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                  Fill Form MCU
+                                </button>
+                              </Link>
+                            </Menu.Item>
                           </Menu.Items>
                         </Menu>
                       </td>

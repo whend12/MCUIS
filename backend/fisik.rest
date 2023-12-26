@@ -1,22 +1,32 @@
-POST http://localhost:5000/api/v1/patient-physique/ HTTP/1.1
+POST http://localhost:5000/api/v1/patient-physique/36
 Content-Type: application/json
 
 {
-    "bmi": 20.76,
+    "bmi": 40.1,
     "weight": 170,
-    "height": 60,
-    "bloodPressure": "120/80",
+    "height": 90,
+    "bloodPressure": "140/90",
     "heartRate": 80,
     "temperature": 36.5,
-    "respiratoryRate": 20,
+    "respiration": 20,
     "complaint": "fever",
-    "distanceVisionExamination": "20/20",
-    "distanceVisionExaminationWithGlasses": "20/20",
+    "distanceVisionExamination": "30/100",
+    "distanceVisionExaminationWithGlasses": "20/100",
     "nearVisionExamination": "J2",
     "visualFieldExamination": "85",
     "nightVisionExamination": "Normal",
     "colorVisionExamination": "Normal",
     "hearingExamination": "Normal",
-    "bloodExamination": "Normal",
-    "PatientId": 36
+    "bloodExamination": "Normal"
 }
+
+
+###
+GET http://localhost:5000/api/v1/patient-physique-simple
+Content-Type: application/json
+
+{
+
+}
+
+

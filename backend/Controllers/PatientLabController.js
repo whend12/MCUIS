@@ -9,6 +9,19 @@ export const CreatePatientLab = async (req, res) => {
   }
 };
 
+export const CreatePatientLabById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const patientLab = await PatientLab.create({
+      ...req.body,
+      PatientId: id,
+    });
+    res.json(patientLab);
+  } catch (error) {
+    res.json({ message: error.message });
+  }
+};
+
 export const GetAllPatientLab = async (req, res) => {
   try {
     const patientLab = await PatientLab.findAll();

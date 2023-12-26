@@ -1,22 +1,20 @@
 import express from "express";
 import {
-  getPatientLab,
-  getPatientLabById,
-  createPatientLab,
-  updatePatientLab,
-  deletePatientLab,
-} from "../Controllers/PatientLab.js";
+  CreatePatientLab,
+  CreatePatientLabById,
+  GetAllPatientLab,
+  GetPatientLabById,
+  UpdatePatientLab,
+  DeletePatientLab,
+} from "../Controllers/PatientLabController.js";
 
 const router = express.Router();
 
-router.get("/", getPatientLab);
-
-router.get("/:id", getPatientLabById);
-
-router.post("/", createPatientLab);
-
-router.patch("/:id", updatePatientLab);
-
-router.delete("/:id", deletePatientLab);
+router.post("form-lab/", CreatePatientLab);
+router.post("form-lab/:id", CreatePatientLabById);
+router.get("form-lab/", GetAllPatientLab);
+router.get("form-lab/:id", GetPatientLabById);
+router.put("form-lab/:id", UpdatePatientLab);
+router.delete("form-lab/:id", DeletePatientLab);
 
 export default router;

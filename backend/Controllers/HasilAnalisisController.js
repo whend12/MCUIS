@@ -1,8 +1,7 @@
-import HasilAnalisis from "../Models/HasilAnalisModel";
-import HasilAnalisis from "../Models/HasilAnalisModel";
-import PatientPhysique from "../Models/PatientPhysiqueModel";
-import PatientPhysiqueTwo from "../Models/PatientPhysiqueTwoModel";
-import Condition from "../Models/ConditionModel";
+import HasilAnalisis from "../Models/HasilAnalisModel.js";
+import PatientPhysique from "../Models/PatientPhysiqueModel.js";
+import PatientPhysiqueTwo from "../Models/PatientPhysiqueTwoModel.js";
+import Condition from "../Models/ConditionModel.js";
 import { Op } from "sequelize";
 
 export const CreateHasilAnalisis = async (req, res) => {

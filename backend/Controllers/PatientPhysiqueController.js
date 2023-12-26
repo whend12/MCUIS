@@ -1,77 +1,82 @@
-import PatientPhysique from "../Models/PatientPhysiqueModel.js";
-import Patient from "../Models/PatientModel.js";
+import PatientPhysique from "../Models//PatientPhysiqueModel.js";
 
-export const CreatePatientPhysique = async (req, res) => {
+export const createPatientPhysique = async (req, res) => {
   try {
-    const { id } = req.params; // Ambil ID dari request
+    const { id } = req.params;
+    const newPhysique = await PatientPhysique.create({
+      ...req.body,
+      PatientId: id,
+    });
 
-    // Cari data PatientPhysique berdasarkan ID
-    const patientPhysique = await PatientPhysique.findByPk(id);
-
-    if (!patientPhysique) {
-      return res.status(404).json({ message: "PatientPhysique not found" });
-    }
-
-    // Lakukan update pada data yang diperlukan
-    await patientPhysique.update(req.body);
-
-    res.json({
-      message: "PatientPhysique updated successfully",
-      updatedPatientPhysique: patientPhysique,
+    res.status(201).json({
+      message: "PatientPhysique created successfully",
+      newPhysique,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-export const GetAllPatientPhysique = async (req, res) => {
+export const getPatientPhysiqueById = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const patientPhysique = new PatientPhysique.findOne({
+      where: {
+        PatientId: id,
+      },
+    });
+
+    if (!patientPhysique) {
+      return res.status(404).json({ message: "PatientPhysique not found" });
+    }
+
+    res.json(patientPhysique);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getAllPatientPhysique = async (req, res) => {
   try {
     const patientPhysique = await PatientPhysique.findAll();
     res.json(patientPhysique);
   } catch (error) {
-    res.json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
-export const GetPatientPhysiqueById = async (req, res) => {
+export const updatePatientPhysique = async (req, res) => {
   try {
-    const patientPhysique = await PatientPhysique.findAll({
-      where: {
-        id: req.params.id,
-      },
-    });
-    res.json(patientPhysique[0]);
+    const { id } = req.params;
+    const patientPhysique = await PatientPhysique.findByPk(id);
+
+    if (!patientPhysique) {
+      return res.status(404).json({ message: "PatientPhysique not found" });
+    }
+
+    await patientPhysique.update(req.body);
+
+    res.json({ message: "PatientPhysique updated successfully" });
   } catch (error) {
-    res.json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
-export const UpdatePatientPhysique = async (req, res) => {
+export const deletePatientPhysique = async (req, res) => {
   try {
-    await PatientPhysique.update(req.body, {
+    const { id } = req.params;
+    const deletedPhysique = await PatientPhysique.destroy({
       where: {
-        id: req.params.id,
+        id,
       },
     });
-    res.json({
-      message: "PatientPhysique Updated",
-    });
-  } catch (error) {
-    res.json({ message: error.message });
-  }
-};
 
-export const DeletePatientPhysique = async (req, res) => {
-  try {
-    await PatientPhysique.destroy({
-      where: {
-        id: req.params.id,
-      },
-    });
-    res.json({
-      message: "PatientPhysique Deleted",
-    });
+    if (!deletedPhysique) {
+      return res.status(404).json({ message: "PatientPhysique not found" });
+    }
+
+    res.json({ message: "PatientPhysique deleted successfully" });
   } catch (error) {
-    res.json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };

@@ -1,8 +1,25 @@
-import PatientPhysiqueTwo from "../Models/PatientPhysiqueTwoModel";
+import PatientPhysiqueTwo from "../Models/PatientPhysiqueTwoModel.js";
 
-export const CreatePatientPhysiqueTwo = async (req, res) => {
+export const createPatientPhysiqueTwoById = async (req, res) => {
   try {
-    const patientPhysiqueTwo = await PatientPhysiqueTwo.create(req.body);
+    const { id } = req.params;
+    const patientPhysiqueTwo = await PatientPhysiqueTwo.create({
+      ...req.body,
+      patientId: id,
+    });
+    res.json(patientPhysiqueTwo);
+  } catch (error) {
+    res.json({ message: error.message });
+  }
+};
+
+export const GetAllPatientPhysiqueTwoByPatientId = async (req, res) => {
+  try {
+    const patientPhysiqueTwo = await PatientPhysiqueTwo.findAll({
+      where: {
+        patientId: req.params.patientId,
+      },
+    });
     res.json(patientPhysiqueTwo);
   } catch (error) {
     res.json({ message: error.message });

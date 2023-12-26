@@ -1,22 +1,23 @@
 import express from "express";
 import {
-  getPatientPhysiqueTwo,
-  getPatientPhysiqueTwoById,
-  createPatientPhysiqueTwo,
-  updatePatientPhysiqueTwo,
-  deletePatientPhysiqueTwo,
-} from "../Controllers/PatientPhysiqueTwo.js";
+  createPatientPhysiqueTwoById,
+  GetAllPatientPhysiqueTwoByPatientId,
+  GetAllPatientPhysiqueTwo,
+  GetPatientPhysiqueTwoById,
+  UpdatePatientPhysiqueTwo,
+  DeletePatientPhysiqueTwo,
+} from "../Controllers/PatientPhysiqueTwoController.js";
 
 const router = express.Router();
 
-router.get("/", getPatientPhysiqueTwo);
-
-router.get("/:id", getPatientPhysiqueTwoById);
-
-router.post("/", createPatientPhysiqueTwo);
-
-router.patch("/:id", updatePatientPhysiqueTwo);
-
-router.delete("/:id", deletePatientPhysiqueTwo);
+router.post("/patient-physique-two/:id", createPatientPhysiqueTwoById);
+router.get(
+  "/patient-physique-two/:patientId",
+  GetAllPatientPhysiqueTwoByPatientId
+);
+router.get("/patient-physique-two/", GetAllPatientPhysiqueTwo);
+router.get("/patient-physique-two/:id", GetPatientPhysiqueTwoById);
+router.put("/patient-physique-two/:id", UpdatePatientPhysiqueTwo);
+router.delete("/patient-physique-two/:id", DeletePatientPhysiqueTwo);
 
 export default router;

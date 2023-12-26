@@ -44,5 +44,6 @@ const PatientPhysiqueTwo = database.define("PatientPhysiqueTwo", {
 });
 
 PatientPhysiqueTwo.belongsTo(Patient); // Mendefinisikan relasi PatientPhysique memiliki satu pasien (belongsTo Patient)
+Patient.hasOne(PatientPhysiqueTwo); // Mendefinisikan relasi Patient memiliki satu PatientPhysique (hasOne PatientPhysique)
 
 export default PatientPhysiqueTwo;

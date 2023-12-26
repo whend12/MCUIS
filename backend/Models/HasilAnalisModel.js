@@ -1,21 +1,35 @@
-import Patient from "../Models/PatientModel.js"; // Mengimpor model Patient
-
-import database from "../Config/Database.js";
+import Patient from "./PatientModel.js";
 import { Sequelize } from "sequelize";
+import database from "../Config/Database.js";
 
 const { DataTypes } = Sequelize;
 
-const HasilAnalisis = database.define("HasilAnalisis", {
-  saran: {
-    type: DataTypes.STRING,
-    allowNull: false,
+const HasilAnalisis = database.define(
+  "HasilAnalisis", // Pastikan menggunakan nama tabel yang benar
+  {
+    saran: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    kesimpulan: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
+    PatientId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: {
+        model: Patient,
+        key: "id",
+        field: "id",
+      },
+    },
   },
-  kesimpulan: {
-    type: DataTypes.STRING,
-    allowNull: false,
-  },
-});
+  {
+    freezeTableName: true,
+  }
+);
 
-HasilAnalisis.belongsTo(Patient); // Mendefinisikan relasi HasilAnalisis memiliki satu pasien (belongsTo Patient)
+HasilAnalisis.sync();
 
 export default HasilAnalisis;

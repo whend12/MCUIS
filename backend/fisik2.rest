@@ -1,0 +1,14 @@
+POST http://localhost:5000/api/v1/patient-physique-two/37
+Content-Type: application/json
+
+{
+    "head": "Normal",
+    "neck": "Normal",
+    "eyes": "Normal",
+    "chest": "Normal",
+    "nose": "Normal",
+    "abdomen": "Normal",
+    "extremities": "Normal",
+    "skin": "Normal",
+    "lymph_nodes": "Normal"
+}
