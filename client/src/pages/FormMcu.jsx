@@ -73,7 +73,7 @@ const PatientPhysiqueForm = () => {
     setFormData(newFormData);
   };
 
-  const handleSubmit = async (e, patientId) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Validasi data sebelum mengirim
@@ -118,7 +118,7 @@ const PatientPhysiqueForm = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/v1/patient-physique/${patientId}`,
+        `http://localhost:5000/api/v1/patient-physique/${id}`, // Menggunakan nilai id dari useParams
         formData,
         {
           headers: {
@@ -129,7 +129,26 @@ const PatientPhysiqueForm = () => {
 
       if (response.status === 200 || response.status === 201) {
         console.log("Data submitted successfully!");
+        setSubmitSuccess(true);
         // Lakukan redirect atau tampilkan pesan sukses
+        setFormData({
+          bmi: "",
+          weight: "",
+          height: "",
+          bloodPressure: "",
+          heartRate: "",
+          temperature: "",
+          respiration: "",
+          complaint: "",
+          distanceVisionExamination: "",
+          distanceVisionExaminationWithGlasses: "",
+          nearVisionExamination: "",
+          visualFieldExamination: "",
+          nightVisionExamination: "",
+          colorVisionExamination: "",
+          hearingExamination: "",
+          bloodExamination: "",
+        });
       } else {
         console.error("Failed to submit data:", response.data);
         // Tampilkan pesan kesalahan yang diberikan oleh server (jika ada)
@@ -189,9 +208,21 @@ const PatientPhysiqueForm = () => {
     fetchPatientData();
   }, [id]);
 
+  const [submitSuccess, setSubmitSuccess] = useState(false);
   return (
     <div className="w-full mx-auto p-6 rounded-md bg-white shadow-md">
       <h2 className="text-2xl font-semibold mb-4">Patient Physique Form</h2>
+      {submitSuccess && (
+        <div className="bg-green-200 text-green-800 px-4 py-2 mt-4 rounded-md absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-between">
+          <p>Data submitted successfully!</p>
+          <button
+            onClick={() => setSubmitSuccess(false)}
+            className="text-sm text-green-900 hover:text-green-700 focus:outline-none"
+          >
+            Close
+          </button>
+        </div>
+      )}
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-1 border-2 rounded-md p-4">
@@ -242,12 +273,12 @@ const PatientPhysiqueForm = () => {
               />
             </div>
             <div className="max-w-xs">
-              <label htmlFor="heart_rate" className="block mb-1">
+              <label htmlFor="heartRate" className="block mb-1">
                 Heart Rate (bpm):
               </label>
               <InputField
-                id="heart_rate"
-                name="heart_rate"
+                id="heartRate"
+                name="heartRate"
                 placeholder="80"
                 value={formData.heartRate}
                 onChange={handleChange}

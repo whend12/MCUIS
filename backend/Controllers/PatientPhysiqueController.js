@@ -62,18 +62,16 @@ export const updatePatientPhysique = async (req, res) => {
   }
 };
 
-export const deletePatientPhysique = async (req, res) => {
+export const deletePatientPhysiqueById = async (req, res) => {
   try {
     const { id } = req.params;
-    const deletedPhysique = await PatientPhysique.destroy({
-      where: {
-        id,
-      },
-    });
+    const patientPhysique = await PatientPhysique.findByPk(id);
 
-    if (!deletedPhysique) {
+    if (!patientPhysique) {
       return res.status(404).json({ message: "PatientPhysique not found" });
     }
+
+    await patientPhysique.destroy();
 
     res.json({ message: "PatientPhysique deleted successfully" });
   } catch (error) {

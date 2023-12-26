@@ -3,7 +3,7 @@ import {
   getPatientPhysiqueById,
   createPatientPhysique,
   updatePatientPhysique,
-  deletePatientPhysique,
+  deletePatientPhysiqueById,
 } from "../Controllers/PatientPhysiqueController.js";
 
 const router = express.Router();
@@ -11,6 +11,6 @@ const router = express.Router();
 router.get("/patient-physique/:id", getPatientPhysiqueById);
 router.post("/patient-physique/:id", createPatientPhysique);
 router.patch("/patient-physique/:id", updatePatientPhysique);
-router.delete("/patient-physique/:id", deletePatientPhysique);
+router.delete("/patient-physique/:id", deletePatientPhysiqueById);
 
 export default router;
