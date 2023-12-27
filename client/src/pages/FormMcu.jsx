@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Textarea } from "@material-tailwind/react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const InputField = ({ id, name, placeholder, value, onChange }) => {
   return (
@@ -131,7 +132,6 @@ const PatientPhysiqueForm = () => {
 
       if (response.status === 200 || response.status === 201) {
         console.log("Data submitted successfully!");
-        setSubmitSuccess(true);
 
         // Lakukan redirect atau tampilkan pesan sukses
         setFormData({
@@ -153,8 +153,15 @@ const PatientPhysiqueForm = () => {
           bloodExamination: "",
         });
 
+        Swal.fire({
+          icon: "success",
+          title: "Patient physique form submitted successfully!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+
         setTimeout(() => {
-          Navigate(`/dashboard/patient-physique-two/${id}`);
+          Navigate(`/dashboard/form-mcu2/${id}`);
         }, 1500);
       } else {
         console.error("Failed to submit data:", response.data);
@@ -185,7 +192,7 @@ const PatientPhysiqueForm = () => {
     const fetchPatientData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/v1/patient/${id}`
+          `http://localhost:5000/api/v1/patient-physique/${id}`
         );
         const patientData = await response.json();
 
@@ -207,8 +214,6 @@ const PatientPhysiqueForm = () => {
           colorVisionExamination: patientData.colorVisionExamination,
           hearingExamination: patientData.hearingExamination,
         });
-
-        console.log(patientData.bmi);
       } catch (error) {
         console.error("Error fetching patient data: ", error);
       }
@@ -217,21 +222,10 @@ const PatientPhysiqueForm = () => {
     fetchPatientData();
   }, [id]);
 
-  const [submitSuccess, setSubmitSuccess] = useState(false);
   return (
     <div className="w-full mx-auto p-6 rounded-md bg-white shadow-md">
       <h2 className="text-2xl font-semibold mb-4">Patient Physique Form</h2>
-      {submitSuccess && (
-        <div className="bg-green-200 text-green-800 px-4 py-2 mt-4 rounded-md absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-between">
-          <p>Data submitted successfully!</p>
-          <button
-            onClick={() => setSubmitSuccess(false)}
-            className="text-sm text-green-900 hover:text-green-700 focus:outline-none"
-          >
-            Close
-          </button>
-        </div>
-      )}
+
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-1 border-2 rounded-md p-4">

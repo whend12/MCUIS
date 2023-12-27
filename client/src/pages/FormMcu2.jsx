@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
+import Swal from "sweetalert2";
 
 const PatientPhysiqueFormtwo = () => {
   const { id } = useParams();
@@ -41,6 +42,13 @@ const PatientPhysiqueFormtwo = () => {
 
       if (response.status === 200 || response.status === 201) {
         console.log("Data submitted successfully!");
+
+        Swal.fire({
+          title: "Success!",
+          text: "Patient physique two form submitted successfully!",
+          icon: "success",
+          confirmButtonText: "Ok",
+        });
 
         setTimeout(() => {
           Navigate(`/dashboard/form-lab/${id}`);
