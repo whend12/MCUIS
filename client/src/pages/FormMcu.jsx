@@ -212,6 +212,25 @@ const PatientPhysiqueForm = () => {
               confirmButtonText: "Ok",
               timer: 1500,
             });
+
+            setFormData({
+              bmi: "",
+              weight: "",
+              height: "",
+              bloodPressure: "",
+              heartRate: "",
+              temperature: "",
+              respiration: "",
+              complaint: "",
+              distanceVisionExamination: "",
+              distanceVisionExaminationWithGlasses: "",
+              nearVisionExamination: "",
+              visualFieldExamination: "",
+              nightVisionExamination: "",
+              colorVisionExamination: "",
+              hearingExamination: "",
+              bloodExamination: "",
+            });
           } else {
             console.error("Failed to delete data.");
           }

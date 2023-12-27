@@ -61,6 +61,18 @@ const PatientPhysiqueFormtwo = () => {
           confirmButtonText: "Ok",
           timer: 1500,
         });
+
+        setFormData({
+          head: "",
+          neck: "",
+          eyes: "",
+          chest: "",
+          nose: "",
+          abdomen: "",
+          extremities: "",
+          skin: "",
+          lymph_nodes: "",
+        });
       } else {
         console.error("Failed to submit data.");
       }
