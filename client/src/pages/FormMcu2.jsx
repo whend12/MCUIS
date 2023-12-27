@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const PatientPhysiqueFormtwo = () => {
   const { id } = useParams();
+  const Navigate = useNavigate();
   const [formData, setFormData] = useState({
     head: "",
     neck: "",
@@ -29,7 +30,7 @@ const PatientPhysiqueFormtwo = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/v1/physique-two/${id}`,
+        `http://localhost:5000/api/v1/patient-physique-two/${id}`,
         formData,
         {
           headers: {
@@ -38,9 +39,12 @@ const PatientPhysiqueFormtwo = () => {
         }
       );
 
-      if (response.status === 200) {
+      if (response.status === 200 || response.status === 201) {
         console.log("Data submitted successfully!");
-        // Lakukan redirect atau tampilkan pesan sukses jika perlu
+
+        setTimeout(() => {
+          Navigate(`/dashboard/form-lab/${id}`);
+        }, 1500);
       } else {
         console.error("Failed to submit data.");
       }
@@ -121,7 +125,6 @@ const PatientPhysiqueFormtwo = () => {
               </label>
             </div>
           ))}
-          {/* End Radio Buttons */}
 
           <button
             type="submit"
