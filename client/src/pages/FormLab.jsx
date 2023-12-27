@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Textarea } from "@material-tailwind/react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
@@ -13,7 +12,6 @@ const InputField = ({ id, name, placeholder, value, onChange }) => {
       placeholder={placeholder}
       value={value}
       onChange={onChange}
-      required
       className="w-full bg-transparent border-b border-gray-400 py-2 px-3 focus:outline-none focus:border-blue-500"
     />
   );
@@ -73,7 +71,7 @@ const PatientLab = () => {
 
     try {
       const response = await axios.post(
-        `http://localhost:5000/api/v1/patient-physique/${id}`,
+        `http://localhost:5000/api/v1/form-lab/${id}`,
         formData,
         {
           headers: {
@@ -85,11 +83,37 @@ const PatientLab = () => {
       if (response.status === 200 || response.status === 201) {
         console.log("Data submitted successfully!");
 
-        setFormData({});
+        setFormData({
+          hemoglobin: "",
+          hematocrit: "",
+          leukocyte: "",
+          trombocyte: "",
+          erythrocyte: "",
+          mcv: "",
+          mch: "",
+          mchc: "",
+          basofil: "",
+          eosinofil: "",
+          neutrofil: "",
+          limfosit: "",
+          monosit: "",
+          led: "",
+          urinecolor: "",
+          urineph: "",
+          urineprotein: "",
+          nitrit: "",
+          leukocyteUrine: "",
+          bloodurine: "",
+          glucoseUrine: "",
+          eritrositUrine: "",
+          eritrositSedimen: "",
+          leukositSedimen: "",
+          crystalUrine: "",
+        });
 
         Swal.fire({
           icon: "success",
-          title: "Data submitted successfully!",
+          title: "Patient Lab Data Submitted Successfully!",
           showConfirmButton: false,
           timer: 1500,
         });
@@ -136,8 +160,8 @@ const PatientLab = () => {
                 id="hemoglobin"
                 name="hemoglobin"
                 value={formData.hemoglobin}
-                disabled={formData.hemoglobin !== ""}
                 placeholder="12.8"
+                onChange={handleChange}
               />
             </div>
             <div className="max-w-xs">
@@ -149,6 +173,7 @@ const PatientLab = () => {
                 name="hematocrit"
                 value={formData.hematocrit}
                 placeholder="0.4" // 40%
+                onChange={handleChange}
               />
             </div>
             <div className="max-w-xs">
