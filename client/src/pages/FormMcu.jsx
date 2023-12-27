@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Textarea } from "@material-tailwind/react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const InputField = ({ id, name, placeholder, value, onChange }) => {
@@ -38,6 +38,8 @@ const RadioButton = ({ id, name, value, checked, onChange, label }) => {
 
 const PatientPhysiqueForm = () => {
   const { id } = useParams();
+  const Navigate = useNavigate();
+
   const [formData, setFormData] = useState({
     bmi: "",
     weight: "",
@@ -130,6 +132,7 @@ const PatientPhysiqueForm = () => {
       if (response.status === 200 || response.status === 201) {
         console.log("Data submitted successfully!");
         setSubmitSuccess(true);
+
         // Lakukan redirect atau tampilkan pesan sukses
         setFormData({
           bmi: "",
@@ -149,6 +152,10 @@ const PatientPhysiqueForm = () => {
           hearingExamination: "",
           bloodExamination: "",
         });
+
+        setTimeout(() => {
+          Navigate(`/dashboard/patient-physique-two/${id}`);
+        }, 1500);
       } else {
         console.error("Failed to submit data:", response.data);
         // Tampilkan pesan kesalahan yang diberikan oleh server (jika ada)
@@ -200,6 +207,8 @@ const PatientPhysiqueForm = () => {
           colorVisionExamination: patientData.colorVisionExamination,
           hearingExamination: patientData.hearingExamination,
         });
+
+        console.log(patientData.bmi);
       } catch (error) {
         console.error("Error fetching patient data: ", error);
       }
