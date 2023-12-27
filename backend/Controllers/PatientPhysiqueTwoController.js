@@ -86,7 +86,7 @@ export const UpdatePatientPhysiqueTwo = async (req, res) => {
   try {
     await PatientPhysiqueTwo.update(req.body, {
       where: {
-        id: req.params.id,
+        PatientId: req.params.id,
       },
     });
     res.json({
@@ -101,7 +101,7 @@ export const DeletePatientPhysiqueTwo = async (req, res) => {
   try {
     await PatientPhysiqueTwo.destroy({
       where: {
-        id: req.params.id,
+        PatientId: req.params.id,
       },
     });
     res.json({

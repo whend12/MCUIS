@@ -136,7 +136,11 @@ export const getAllPatientPhysique = async (req, res) => {
 export const updatePatientPhysique = async (req, res) => {
   try {
     const { id } = req.params;
-    const patientPhysique = await PatientPhysique.findByPk(id);
+    const patientPhysique = await PatientPhysique.findOne({
+      where: {
+        PatientId: id,
+      },
+    });
 
     if (!patientPhysique) {
       return res.status(404).json({ message: "PatientPhysique not found" });
@@ -153,7 +157,11 @@ export const updatePatientPhysique = async (req, res) => {
 export const deletePatientPhysiqueById = async (req, res) => {
   try {
     const { id } = req.params;
-    const patientPhysique = await PatientPhysique.findByPk(id);
+    const patientPhysique = await PatientPhysique.findOne({
+      where: {
+        PatientId: id,
+      },
+    });
 
     if (!patientPhysique) {
       return res.status(404).json({ message: "PatientPhysique not found" });
