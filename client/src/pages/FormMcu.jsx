@@ -3,6 +3,7 @@ import { Textarea } from "@material-tailwind/react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import * as Yup from "yup";
 
 const InputField = ({ id, name, placeholder, value, onChange }) => {
   return (
@@ -57,7 +58,10 @@ const PatientPhysiqueForm = () => {
     nightVisionExamination: "",
     colorVisionExamination: "",
     hearingExamination: "",
+    bloodExamination: "",
   });
+
+  const [isEdit, setIsEdit] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -80,55 +84,52 @@ const PatientPhysiqueForm = () => {
     e.preventDefault();
 
     // Validasi data sebelum mengirim
-    const requiredFields = [
-      "bmi",
-      "weight",
-      "height",
-      "bloodPressure",
-      "heartRate",
-      "complaint",
-      "distanceVisionExamination",
-      "distanceVisionExaminationWithGlasses",
-      "nearVisionExamination",
-      "bloodExamination",
-      // Tambahkan field lain yang diperlukan di sini
-    ];
-
-    const emptyFields = [];
-    requiredFields.forEach((field) => {
-      if (!formData[field] || formData[field].trim() === "") {
-        emptyFields.push(field);
-      }
+    const validationSchema = Yup.object().shape({
+      bmi: Yup.number().required("BMI is required"),
+      weight: Yup.number().required("Weight is required"),
+      height: Yup.number().required("Height is required"),
+      bloodPressure: Yup.string().required("Blood Pressure is required"),
+      heartRate: Yup.number().required("Heart Rate is required"),
+      complaint: Yup.string().required("Complaint is required"),
+      distanceVisionExamination: Yup.string().required(
+        "Distance Vision Examination is required"
+      ),
+      distanceVisionExaminationWithGlasses: Yup.string().required(
+        "Distance Vision Examination With Glasses is required"
+      ),
+      nearVisionExamination: Yup.string().required(
+        "Near Vision Examination is required"
+      ),
+      bloodExamination: Yup.string().required("Blood Examination is required"),
+      // Tambahkan validasi lain sesuai kebutuhan
     });
 
-    if (emptyFields.length > 0) {
-      console.error(
-        `Please fill in the following required fields: ${emptyFields.join(
-          ", "
-        )}`
-      );
-      return;
-    }
-
-    const isValid = requiredFields.every(
-      (field) => formData[field] && formData[field].trim() !== ""
-    );
-
+    const isValid = await validationSchema.isValid(formData);
     if (!isValid) {
       console.error("Please fill in all required fields.");
       return;
     }
 
     try {
-      const response = await axios.post(
-        `http://localhost:5000/api/v1/patient-physique/${id}`, // Menggunakan nilai id dari useParams
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      let method,
+        successMessage,
+        url = `http://localhost:5000/api/v1/patient-physique/${id}`; // Menggunakan nilai id dari useParams
+
+      if (isEdit) {
+        method = "put";
+        successMessage = "updated successfully";
+      } else {
+        method = "post";
+        successMessage = "submitted successfully";
+      }
+      const response = await axios({
+        method,
+        url,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: formData,
+      });
 
       if (response.status === 200 || response.status === 201) {
         console.log("Data submitted successfully!");
@@ -155,7 +156,7 @@ const PatientPhysiqueForm = () => {
 
         Swal.fire({
           icon: "success",
-          title: "Patient physique form submitted successfully!",
+          title: `Patient physique form ${successMessage}!`,
           showConfirmButton: false,
           timer: 1500,
         });
@@ -194,26 +195,31 @@ const PatientPhysiqueForm = () => {
         const response = await fetch(
           `http://localhost:5000/api/v1/patient-physique/${id}`
         );
-        const patientData = await response.json();
+        if (response.ok) {
+          const patientData = await response.json();
 
-        setFormData({
-          bmi: patientData.bmi,
-          weight: patientData.weight,
-          height: patientData.height,
-          bloodPressure: patientData.bloodPressure,
-          heartRate: patientData.heartRate,
-          temperature: patientData.temperature,
-          respiration: patientData.respiration,
-          complaint: patientData.complaint,
-          distanceVisionExamination: patientData.distanceVisionExamination,
-          distanceVisionExaminationWithGlasses:
-            patientData.distanceVisionExaminationWithGlasses,
-          nearVisionExamination: patientData.nearVisionExamination,
-          visualFieldExamination: patientData.visualFieldExamination,
-          nightVisionExamination: patientData.nightVisionExamination,
-          colorVisionExamination: patientData.colorVisionExamination,
-          hearingExamination: patientData.hearingExamination,
-        });
+          setFormData({
+            bmi: patientData.bmi,
+            weight: patientData.weight,
+            height: patientData.height,
+            bloodPressure: patientData.bloodPressure,
+            heartRate: patientData.heartRate,
+            temperature: patientData.temperature,
+            respiration: patientData.respiration,
+            complaint: patientData.complaint,
+            distanceVisionExamination: patientData.distanceVisionExamination,
+            distanceVisionExaminationWithGlasses:
+              patientData.distanceVisionExaminationWithGlasses,
+            nearVisionExamination: patientData.nearVisionExamination,
+            visualFieldExamination: patientData.visualFieldExamination,
+            nightVisionExamination: patientData.nightVisionExamination,
+            colorVisionExamination: patientData.colorVisionExamination,
+            hearingExamination: patientData.hearingExamination,
+            bloodExamination: patientData.bloodExamination,
+          });
+
+          setIsEdit(true);
+        }
       } catch (error) {
         console.error("Error fetching patient data: ", error);
       }
@@ -487,7 +493,7 @@ const PatientPhysiqueForm = () => {
           type="submit"
           className="bg-blue-500 text-white py-2 px-4 mt-4 rounded-md hover:bg-blue-600 transition-all"
         >
-          Submit
+          {isEdit ? "Update" : "Submit"}
         </button>
       </form>
     </div>
