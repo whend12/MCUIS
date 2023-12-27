@@ -25,6 +25,7 @@ export const CreatePatientLabById = async (req, res) => {
 
     for (const key in hasilPengecekan) {
       await HasilAnalisis.create({
+        name: key,
         saran: hasilPengecekan[key].saran,
         kesimpulan: "Tidak ada kesimpulan",
         PatientId: id,

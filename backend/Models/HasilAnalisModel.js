@@ -7,6 +7,10 @@ const { DataTypes } = Sequelize;
 const HasilAnalisis = database.define(
   "HasilAnalisis", // Pastikan menggunakan nama tabel yang benar
   {
+    name: {
+      type: DataTypes.STRING,
+      allowNull: false,
+    },
     saran: {
       type: DataTypes.STRING,
       allowNull: false,
