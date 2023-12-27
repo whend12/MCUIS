@@ -246,11 +246,20 @@ const PatientList = () => {
                               <Library />
                             </Menu.Button>
                           </div>
-                          <Menu.Items className="absolute right-0 z-10 w-32 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg focus:outline-none">
+                          <Menu.Items className="absolute right-0 z-10 w-48 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg focus:outline-none">
                             <Menu.Item>
                               <Link to={`/dashboard/form-mcu/${patient.id}`}>
                                 <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                   Fill Form MCU
+                                </button>
+                              </Link>
+                            </Menu.Item>
+                            <Menu.Item>
+                              <Link
+                                to={`/dashboard/hasil-analisis/${patient.id}`}
+                              >
+                                <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                  Show Analysis Result
                                 </button>
                               </Link>
                             </Menu.Item>
