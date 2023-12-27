@@ -108,7 +108,7 @@ function bandingkanPenglihatan(nilai1, nilai2) {
 export const getPatientPhysiqueById = async (req, res) => {
   try {
     const { id } = req.params;
-    const patientPhysique = new PatientPhysique.findOne({
+    const patientPhysique = await PatientPhysique.findOne({
       where: {
         PatientId: id,
       },

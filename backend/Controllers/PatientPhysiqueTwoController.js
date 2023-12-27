@@ -11,7 +11,7 @@ export const createPatientPhysiqueTwoById = async (req, res) => {
 
     const patientPhysiqueTwo = await PatientPhysiqueTwo.create({
       ...req.body,
-      patientId: id,
+      PatientId: id,
     });
 
     for (const key in hasilPengecekan) {
@@ -62,9 +62,9 @@ async function cekStatus(inputUser) {
 
 export const GetAllPatientPhysiqueTwoByPatientId = async (req, res) => {
   try {
-    const patientPhysiqueTwo = await PatientPhysiqueTwo.findAll({
+    const patientPhysiqueTwo = await PatientPhysiqueTwo.findOne({
       where: {
-        patientId: req.params.patientId,
+        PatientId: req.params.id,
       },
     });
     res.json(patientPhysiqueTwo);
@@ -82,19 +82,6 @@ export const GetAllPatientPhysiqueTwo = async (req, res) => {
   }
 };
 
-export const GetPatientPhysiqueTwoById = async (req, res) => {
-  try {
-    const patientPhysiqueTwo = await PatientPhysiqueTwo.findAll({
-      where: {
-        id: req.params.id,
-      },
-    });
-    res.json(patientPhysiqueTwo[0]);
-  } catch (error) {
-    res.json({ message: error.message });
-  }
-};
-
 export const UpdatePatientPhysiqueTwo = async (req, res) => {
   try {
     await PatientPhysiqueTwo.update(req.body, {
@@ -105,19 +92,6 @@ export const UpdatePatientPhysiqueTwo = async (req, res) => {
     res.json({
       message: "PatientPhysiqueTwo Updated",
     });
-  } catch (error) {
-    res.json({ message: error.message });
-  }
-};
-
-export const GetPatientPhysiqueTwoByPatientId = async (req, res) => {
-  try {
-    const patientPhysiqueTwo = await PatientPhysiqueTwo.findAll({
-      where: {
-        patientId: req.params.patientId,
-      },
-    });
-    res.json(patientPhysiqueTwo[0]);
   } catch (error) {
     res.json({ message: error.message });
   }

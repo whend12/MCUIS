@@ -81,7 +81,7 @@ export const GetPatientLabById = async (req, res) => {
   try {
     const patientLab = await PatientLab.findOne({
       where: {
-        id: req.params.id,
+        PatientId: req.params.id,
       },
     });
     res.json(patientLab);
