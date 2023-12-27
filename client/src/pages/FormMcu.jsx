@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Textarea } from "@material-tailwind/react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
@@ -40,7 +40,6 @@ const RadioButton = ({ id, name, value, checked, onChange, label }) => {
 
 const PatientPhysiqueForm = () => {
   const { id } = useParams();
-  const Navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     bmi: "",
@@ -160,10 +159,6 @@ const PatientPhysiqueForm = () => {
           showConfirmButton: false,
           timer: 1500,
         });
-
-        setTimeout(() => {
-          Navigate(`/dashboard/form-mcu2/${id}`);
-        }, 1500);
       } else {
         console.error("Failed to submit data:", response.data);
         // Tampilkan pesan kesalahan yang diberikan oleh server (jika ada)
@@ -489,12 +484,33 @@ const PatientPhysiqueForm = () => {
           </div>
         </div>
 
-        <button
-          type="submit"
-          className="bg-blue-500 text-white py-2 px-4 mt-4 rounded-md hover:bg-blue-600 transition-all"
-        >
-          {isEdit ? "Update" : "Submit"}
-        </button>
+        <div className="flex justify-between">
+          <div>
+            <button
+              type="submit"
+              className={
+                isEdit
+                  ? "bg-amber-500 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-amber-600 transition-all"
+                  : "bg-blue-500 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-blue-600 transition-all"
+              }
+            >
+              {isEdit ? "Update" : "Submit"}
+            </button>
+            <button
+              type="button"
+              className="bg-red-500 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-red-600 transition-all "
+              // onClick={}
+            >
+              Delete
+            </button>
+          </div>
+          <Link
+            to={`/dashboard/form-mcu2/${id}`}
+            className="bg-indigo-600 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-indigo-700 transition-all "
+          >
+            Next
+          </Link>
+        </div>
       </form>
     </div>
   );
