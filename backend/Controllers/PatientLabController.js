@@ -94,7 +94,7 @@ export const UpdatePatientLab = async (req, res) => {
   try {
     await PatientLab.update(req.body, {
       where: {
-        id: req.params.id,
+        PatientId: req.params.id,
       },
     });
     res.json({
@@ -109,7 +109,7 @@ export const DeletePatientLab = async (req, res) => {
   try {
     await PatientLab.destroy({
       where: {
-        id: req.params.id,
+        PatientId: req.params.id,
       },
     });
     res.json({
