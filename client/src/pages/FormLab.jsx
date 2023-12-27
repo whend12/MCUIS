@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
+import * as Yup from "yup";
 
 const InputField = ({ id, name, placeholder, value, onChange }) => {
   return (
@@ -19,7 +20,6 @@ const InputField = ({ id, name, placeholder, value, onChange }) => {
 
 const PatientLab = () => {
   const { id } = useParams();
-  const Navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     hemoglobin: "",
@@ -49,6 +49,8 @@ const PatientLab = () => {
     crystalUrine: "",
   });
 
+  const [isEdit, setIsEdit] = useState(false);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     let newFormData = { ...formData, [name]: value };
@@ -59,16 +61,65 @@ const PatientLab = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // validasi form
+    const validationSchema = Yup.object().shape({
+      hemoglobin: Yup.number().required("Hemoglobin is required!"),
+      hematocrit: Yup.number().required("Hematocrit is required!"),
+      leukocyte: Yup.number().required("Leukocyte is required!"),
+      trombocyte: Yup.number().required("Trombocyte is required!"),
+      erythrocyte: Yup.number().required("Erythrocyte is required!"),
+      mcv: Yup.number().required("MCV is required!"),
+      mch: Yup.number().required("MCH is required!"),
+      mchc: Yup.number().required("MCHC is required!"),
+      basofil: Yup.number().required("Basofil is required!"),
+      eosinofil: Yup.number().required("Eosinofil is required!"),
+      neutrofil: Yup.number().required("Neutrofil is required!"),
+      limfosit: Yup.number().required("Limfosit is required!"),
+      monosit: Yup.number().required("Monosit is required!"),
+      led: Yup.number().required("LED is required!"),
+      urinecolor: Yup.string().required("Urine Color is required!"),
+      urineph: Yup.number().required("Urine pH is required!"),
+      urineprotein: Yup.string().required("Urine Protein is required!"),
+      nitrit: Yup.string().required("Nitrit is required!"),
+      leukocyteUrine: Yup.number().required("Leukocyte Urine is required!"),
+      bloodurine: Yup.string().required("Blood Urine is required!"),
+      glucoseUrine: Yup.number().required("Glucose Urine is required!"),
+      eritrositUrine: Yup.number().required("Erythrocyte Urine is required!"),
+      eritrositSedimen: Yup.number().required(
+        "Erythrocyte Sedimen is required!"
+      ),
+      leukositSedimen: Yup.number().required("Leukocyte Sedimen is required!"),
+      crystalUrine: Yup.string().required("Crystal Urine is required!"),
+    });
+
+    const isValid = await validationSchema.validate(formData);
+
+    if (!isValid) {
+      console.error("Please fill in all required fields!");
+      return;
+    }
+
     try {
-      const response = await axios.post(
-        `http://localhost:5000/api/v1/form-lab/${id}`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      let method,
+        successMessage,
+        url = `http://localhost:5000/api/v1/form-lab/${id}`;
+
+      if (isEdit) {
+        method = "PUT";
+        successMessage = "updated successfully";
+      } else {
+        method = "POST";
+        successMessage = "submitted successfully";
+      }
+
+      const response = await axios({
+        method,
+        url,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: formData,
+      });
 
       if (response.status === 200 || response.status === 201) {
         console.log("Data submitted successfully!");
@@ -103,14 +154,10 @@ const PatientLab = () => {
 
         Swal.fire({
           icon: "success",
-          title: "Patient Lab Data Submitted Successfully!",
+          title: `Patient lab form ${successMessage}!`,
           showConfirmButton: false,
           timer: 1500,
         });
-
-        setTimeout(() => {
-          Navigate(`/dashboard/hasil-analisis/${id}`);
-        }, 1500);
       } else {
         console.error("Failed to submit data:", response.data);
         // Tampilkan pesan kesalahan yang diberikan oleh server (jika ada)
@@ -135,6 +182,120 @@ const PatientLab = () => {
       }
     }
   };
+
+  const handleDelete = async (e) => {
+    e.preventDefault();
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonColor: "#d33",
+      reverseButtons: false,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await axios.delete(
+            `http://localhost:5000/api/v1/form-lab/${id}`
+          );
+
+          if (response.status === 200) {
+            console.log("Data deleted successfully!");
+
+            Swal.fire({
+              title: "Success!",
+              text: "Patient physique form deleted successfully!",
+              icon: "success",
+              confirmButtonText: "Ok",
+              timer: 1500,
+            });
+
+            setFormData({
+              hemoglobin: "",
+              hematocrit: "",
+              leukocyte: "",
+              trombocyte: "",
+              erythrocyte: "",
+              mcv: "",
+              mch: "",
+              mchc: "",
+              basofil: "",
+              eosinofil: "",
+              neutrofil: "",
+              limfosit: "",
+              monosit: "",
+              led: "",
+              urinecolor: "",
+              urineph: "",
+              urineprotein: "",
+              nitrit: "",
+              leukocyteUrine: "",
+              bloodurine: "",
+              glucoseUrine: "",
+              eritrositUrine: "",
+              eritrositSedimen: "",
+              leukositSedimen: "",
+              crystalUrine: "",
+            });
+          } else {
+            console.error("Failed to delete data.");
+          }
+        } catch (error) {
+          console.error("Error deleting data: ", error);
+        }
+      }
+    });
+  };
+
+  useEffect(() => {
+    const fetchPatientData = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/api/v1/form-lab/${id}`
+        );
+
+        if (response.ok) {
+          const patientData = await response.json();
+
+          setFormData({
+            hemoglobin: patientData.hemoglobin,
+            hematocrit: patientData.hematocrit,
+            leukocyte: patientData.leukocyte,
+            trombocyte: patientData.trombocyte,
+            erythrocyte: patientData.erythrocyte,
+            mcv: patientData.mcv,
+            mch: patientData.mch,
+            mchc: patientData.mchc,
+            basofil: patientData.basofil,
+            eosinofil: patientData.eosinofil,
+            neutrofil: patientData.neutrofil,
+            limfosit: patientData.limfosit,
+            monosit: patientData.monosit,
+            led: patientData.led,
+            urinecolor: patientData.urinecolor,
+            urineph: patientData.urineph,
+            urineprotein: patientData.urineprotein,
+            nitrit: patientData.nitrit,
+            leukocyteUrine: patientData.leukocyteUrine,
+            bloodurine: patientData.bloodurine,
+            glucoseUrine: patientData.glucoseUrine,
+            eritrositUrine: patientData.eritrositUrine,
+            eritrositSedimen: patientData.eritrositSedimen,
+            leukositSedimen: patientData.leukositSedimen,
+            crystalUrine: patientData.crystalUrine,
+          });
+
+          setIsEdit(true);
+        }
+      } catch (error) {
+        console.error("Error fetching patient data:", error);
+      }
+    };
+
+    fetchPatientData();
+  }, [id]);
 
   return (
     <div className="w-full mx-auto p-6 rounded-md bg-white shadow-md">
@@ -453,9 +614,20 @@ const PatientLab = () => {
 
         <button
           type="submit"
-          className="bg-blue-500 text-white py-2 px-4 mt-4 rounded-md hover:bg-blue-600 transition-all"
+          className={
+            isEdit
+              ? "bg-amber-500 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-amber-600 transition-all"
+              : "bg-blue-500 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-blue-600 transition-all"
+          }
         >
-          Submit
+          {isEdit ? "Update" : "Submit"}
+        </button>
+        <button
+          type="button"
+          className="bg-red-500 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-red-600 transition-all "
+          onClick={handleDelete}
+        >
+          Delete
         </button>
       </form>
     </div>
