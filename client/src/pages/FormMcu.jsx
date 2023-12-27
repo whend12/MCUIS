@@ -184,6 +184,44 @@ const PatientPhysiqueForm = () => {
     }
   };
 
+  const handleDelete = async (e) => {
+    e.preventDefault();
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonColor: "#d33",
+      reverseButtons: false,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await axios.delete(
+            `http://localhost:5000/api/v1/patient-physique/${id}`
+          );
+
+          if (response.status === 200) {
+            console.log("Data deleted successfully!");
+
+            Swal.fire({
+              title: "Success!",
+              text: "Patient physique form deleted successfully!",
+              icon: "success",
+              confirmButtonText: "Ok",
+              timer: 1500,
+            });
+          } else {
+            console.error("Failed to delete data.");
+          }
+        } catch (error) {
+          console.error("Error deleting data: ", error);
+        }
+      }
+    });
+  };
+
   useEffect(() => {
     const fetchPatientData = async () => {
       try {
@@ -499,7 +537,7 @@ const PatientPhysiqueForm = () => {
             <button
               type="button"
               className="bg-red-500 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-red-600 transition-all "
-              // onClick={}
+              onClick={handleDelete}
             >
               Delete
             </button>
