@@ -19,60 +19,51 @@ const InputField = ({ id, name, placeholder, value, onChange }) => {
   );
 };
 
-const RadioButton = ({ id, name, value, checked, onChange, label }) => {
-  return (
-    <div className="flex mb-2">
-      <input
-        type="radio"
-        id={id}
-        name={name}
-        value={value}
-        checked={checked}
-        onChange={onChange}
-        className="mr-2"
-      />
-      <label htmlFor={id} className="mr-4">
-        {label}
-      </label>
-    </div>
-  );
-};
-
 const PatientLab = () => {
   const { id } = useParams();
   const Navigate = useNavigate();
 
   const [formData, setFormData] = useState({
-    bmi: "",
-    weight: "",
-    height: "",
-    bloodPressure: "",
-    heartRate: "",
-    temperature: "",
-    respiration: "",
-    complaint: "",
-    distanceVisionExamination: "",
-    distanceVisionExaminationWithGlasses: "",
-    nearVisionExamination: "",
-    visualFieldExamination: "",
-    nightVisionExamination: "",
-    colorVisionExamination: "",
-    hearingExamination: "",
+    hemoglobin: "",
+    hematocrit: "",
+    leukocyte: "",
+    trombocyte: "",
+    erythrocyte: "",
+    mcv: "",
+    mch: "",
+    mchc: "",
+    basofil: "",
+    eosinofil: "",
+    neutrofil: "",
+    limfosit: "",
+    monosit: "",
+    led: "",
+    urinecolor: "",
+    urineph: "",
+    urineprotein: "",
+    nitrit: "",
+    leukocyteUrine: "",
+    bloodurine: "",
+    glucoseUrine: "",
+    eritrositUrine: "",
+    eritrositSedimen: "",
+    leukositSedimen: "",
+    crystalUrine: "",
   });
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     let newFormData = { ...formData, [name]: value };
 
-    if (name === "weight" || name === "height") {
-      const weight = parseFloat(newFormData.weight);
-      const height = parseFloat(newFormData.height);
+    // if (name === "weight" || name === "height") {
+    //   const weight = parseFloat(newFormData.weight);
+    //   const height = parseFloat(newFormData.height);
 
-      if (!isNaN(weight) && !isNaN(height) && height !== 0) {
-        const bmi = (weight / Math.pow(height / 100, 2)).toFixed(2); // Calculate BMI
-        newFormData = { ...newFormData, bmi };
-      }
-    }
+    //   if (!isNaN(weight) && !isNaN(height) && height !== 0) {
+    //     const bmi = (weight / Math.pow(height / 100, 2)).toFixed(2); // Calculate BMI
+    //     newFormData = { ...newFormData, bmi };
+    //   }
+    // }
 
     setFormData(newFormData);
   };
@@ -94,25 +85,7 @@ const PatientLab = () => {
       if (response.status === 200 || response.status === 201) {
         console.log("Data submitted successfully!");
 
-        // Lakukan redirect atau tampilkan pesan sukses
-        setFormData({
-          bmi: "",
-          weight: "",
-          height: "",
-          bloodPressure: "",
-          heartRate: "",
-          temperature: "",
-          respiration: "",
-          complaint: "",
-          distanceVisionExamination: "",
-          distanceVisionExaminationWithGlasses: "",
-          nearVisionExamination: "",
-          visualFieldExamination: "",
-          nightVisionExamination: "",
-          colorVisionExamination: "",
-          hearingExamination: "",
-          bloodExamination: "",
-        });
+        setFormData({});
 
         Swal.fire({
           icon: "success",
@@ -122,7 +95,7 @@ const PatientLab = () => {
         });
 
         setTimeout(() => {
-          Navigate(`/dashboard/form-mcu2/${id}`);
+          Navigate(`/dashboard/hasilanalisis/${id}`);
         }, 1500);
       } else {
         console.error("Failed to submit data:", response.data);
@@ -149,296 +122,315 @@ const PatientLab = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchPatientData = async () => {
-      try {
-        const response = await fetch(
-          `http://localhost:5000/api/v1/patient-physique/${id}`
-        );
-        const patientData = await response.json();
-
-        setFormData({
-          bmi: patientData.bmi,
-          weight: patientData.weight,
-          height: patientData.height,
-          bloodPressure: patientData.bloodPressure,
-          heartRate: patientData.heartRate,
-          temperature: patientData.temperature,
-          respiration: patientData.respiration,
-          complaint: patientData.complaint,
-          distanceVisionExamination: patientData.distanceVisionExamination,
-          distanceVisionExaminationWithGlasses:
-            patientData.distanceVisionExaminationWithGlasses,
-          nearVisionExamination: patientData.nearVisionExamination,
-          visualFieldExamination: patientData.visualFieldExamination,
-          nightVisionExamination: patientData.nightVisionExamination,
-          colorVisionExamination: patientData.colorVisionExamination,
-          hearingExamination: patientData.hearingExamination,
-        });
-      } catch (error) {
-        console.error("Error fetching patient data: ", error);
-      }
-    };
-
-    fetchPatientData();
-  }, [id]);
-
   return (
     <div className="w-full mx-auto p-6 rounded-md bg-white shadow-md">
-      <h2 className="text-2xl font-semibold mb-4">Patient Physique Form</h2>
-
+      <h2 className="text-2xl font-semibold mb-4">Patient Lab</h2>
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-1 border-2 rounded-md p-4">
             <div className="max-w-xs">
-              <label htmlFor="bmi" className="block mb-1">
-                BMI:
+              <label htmlFor="hemoglobin" className="block mb-1">
+                Hemoglobin (g/dL):
               </label>
               <InputField
-                id="bmi"
-                name="bmi"
-                value={formData.bmi}
-                onChange={handleChange}
-                disabled={formData.bmi !== ""}
+                id="hemoglobin"
+                name="hemoglobin"
+                value={formData.hemoglobin}
+                disabled={formData.hemoglobin !== ""}
+                placeholder="12.8"
               />
             </div>
             <div className="max-w-xs">
-              <label htmlFor="height" className="block mb-1">
-                Height (cm):
+              <label htmlFor="hematocrit" className="block mb-1">
+                Hematocrit:
               </label>
               <InputField
-                id="height"
-                name="height"
-                value={formData.height}
-                onChange={handleChange}
+                id="hematocrit"
+                name="hematocrit"
+                value={formData.hematocrit}
+                placeholder="0.4" // 40%
               />
             </div>
             <div className="max-w-xs">
-              <label htmlFor="weight" className="block mb-1">
-                Weight (kg):
+              <label htmlFor="leukocyte" className="block mb-1">
+                Leukocyte (x10^3/µL):
               </label>
               <InputField
-                id="weight"
-                name="weight"
-                value={formData.weight}
-                onChange={handleChange}
-              />
-            </div>
-            <div className="max-w-xs">
-              <label htmlFor="blood_pressure" className="block mb-1">
-                Blood Pressure (mmHg):
-              </label>
-              <InputField
-                id="blood_pressure"
-                name="bloodPressure"
-                placeholder="100/80"
-                value={formData.bloodPressure}
+                id="leukocyte"
+                name="leukocyte"
+                placeholder="8.5"
+                value={formData.leukocyte}
                 onChange={handleChange}
               />
             </div>
             <div className="max-w-xs">
-              <label htmlFor="heartRate" className="block mb-1">
-                Heart Rate (bpm):
+              <label htmlFor="trombocyte" className="block mb-1">
+                Trombocyte (x10^3/µL):
               </label>
               <InputField
-                id="heartRate"
-                name="heartRate"
+                id="trombocyte"
+                name="trombocyte"
+                placeholder="200"
+                value={formData.trombocyte}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="max-w-xs">
+              <label htmlFor="erythrocyte" className="block mb-1">
+                Erythrocyte (x10^6/µL):
+              </label>
+              <InputField
+                id="erythrocyte"
+                name="erythrocyte"
+                placeholder="4.2"
+                value={formData.erythrocyte}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="max-w-xs">
+              <label htmlFor="mcv" className="block mb-1">
+                MCV (fL):
+              </label>
+              <InputField
+                id="mcv"
+                name="mcv"
                 placeholder="80"
-                value={formData.heartRate}
+                value={formData.mcv}
                 onChange={handleChange}
               />
             </div>
             <div className="max-w-xs">
-              <label htmlFor="temperature" className="block mb-1">
-                Temperature (Celcius):
+              <label htmlFor="mch" className="block mb-1">
+                MCH (pg):
               </label>
               <InputField
-                id="temperature"
-                name="temperature"
-                placeholder="36.5"
-                value={formData.temperature}
+                id="mch"
+                name="mch"
+                placeholder="28"
+                value={formData.mch}
                 onChange={handleChange}
               />
             </div>
             <div className="max-w-xs">
-              <label htmlFor="respiration" className="block mb-1">
-                Respiration:
+              <label htmlFor="mchc" className="block mb-1">
+                MCHC (g/dL):
               </label>
               <InputField
-                id="respiration"
-                name="respiration"
-                placeholder="20"
-                value={formData.respiration}
+                id="mchc"
+                name="mchc"
+                placeholder="32"
+                value={formData.mchc}
                 onChange={handleChange}
               />
             </div>
           </div>
 
           <div className="md:col-span-1 border-2 rounded-md p-4">
-            <div className="max-w-md mb-6">
-              <label
-                htmlFor="complaint"
-                className="block mb-1 font-bold text-xl placeholder-gray-400"
-              >
-                Complaint:
+            <div className="max-w-xs">
+              <label htmlFor="basofil" className="block mb-1">
+                Basofil:
               </label>
-              <Textarea
-                id="complaint"
-                name="complaint"
-                placeholder="Isi keluhan pasien disini/ Write patient's complaint here"
-                value={formData.complaint}
+              <InputField
+                id="basofil"
+                name="basofil"
+                placeholder="0.5"
+                value={formData.basofil}
                 onChange={handleChange}
-                rows={8} // Atur jumlah baris yang diinginkan di sini
-                style={{ width: "100%", minHeight: "200px" }} // Atur lebar dan tinggi minimum di sini
-                className="w-full border-gray-400 focus:border-blue-500 focus:ring-blue-500 rounded-md p-2"
+              />
+            </div>
+            <div className="max-w-xs">
+              <label htmlFor="eosinofil" className="block mb-1">
+                Eosinofil:
+              </label>
+              <InputField
+                id="eosinofil"
+                name="eosinofil"
+                placeholder="0.03"
+                value={formData.eosinofil}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="max-w-xs">
+              <label htmlFor="neutrofil" className="block mb-1">
+                Neutrofil:
+              </label>
+              <InputField
+                id="neutrofil"
+                name="neutrofil"
+                placeholder="0.5"
+                value={formData.neutrofil}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="max-w-xs">
+              <label htmlFor="limfosit" className="block mb-1">
+                Limfosit:
+              </label>
+              <InputField
+                id="limfosit"
+                name="limfosit"
+                placeholder="0.4"
+                value={formData.limfosit}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="max-w-xs">
+              <label htmlFor="monosit" className="block mb-1">
+                Monosit:
+              </label>
+              <InputField
+                id="monosit"
+                name="monosit"
+                placeholder="0.17"
+                value={formData.monosit}
+                onChange={handleChange}
+              />
+            </div>
+            <div className="max-w-xs">
+              <label htmlFor="led" className="block mb-1">
+                LED (mm/jam):
+              </label>
+              <InputField
+                id="led"
+                name="led"
+                placeholder="8"
+                value={formData.led}
+                onChange={handleChange}
               />
             </div>
           </div>
 
           <div className="md:col-span-1 border-2 rounded-md p-4">
             <div className="max-w-xs">
-              <label htmlFor="distanceVisionExamination" className="block mb-1">
-                Distance Vision Examination:
+              <label htmlFor="urinecolor" className="block mb-1">
+                Urine Color:
               </label>
               <InputField
-                id="distanceVisionExamination"
-                name="distanceVisionExamination"
-                placeholder="20/20"
-                value={formData.distanceVisionExamination}
+                id="urinecolor"
+                name="urinecolor"
+                placeholder="Yellow"
+                value={formData.urinecolor}
                 onChange={handleChange}
               />
             </div>
             <div className="max-w-xs pb-5">
-              <label
-                htmlFor="distanceVisionExaminationWithGlasses"
-                className="block mb-1"
-              >
-                Vision Examination With Glasses:
+              <label htmlFor="urineph" className="block mb-1">
+                Urine pH:
               </label>
               <InputField
-                id="distanceVisionExaminationWithGlasses"
-                name="distanceVisionExaminationWithGlasses"
-                placeholder="20/20"
-                value={formData.distanceVisionExaminationWithGlasses}
+                id="urineph"
+                name="urineph"
+                placeholder="6.5"
+                value={formData.urineph}
                 onChange={handleChange}
               />
             </div>
             <div className="max-w-xs">
-              <label htmlFor="nearVisionExamination" className="block mb-1">
-                Near Vision Examination:
+              <label htmlFor="urineprotein" className="block mb-1">
+                Urine Protein:
               </label>
               <InputField
-                id="nearVisionExamination"
-                name="nearVisionExamination"
-                placeholder="J1"
-                value={formData.nearVisionExamination}
+                id="urineprotein"
+                name="urineprotein"
+                placeholder="Positive"
+                value={formData.urineprotein}
                 onChange={handleChange}
               />
             </div>
             <div className="max-w-xs">
-              <label htmlFor="visualFieldExamination" className="block mb-1">
-                Visual Field Examination:
+              <label htmlFor="nitrit" className="block mb-1">
+                Nitrit:
               </label>
               <InputField
-                id="visualFieldExamination"
-                name="visualFieldExamination"
-                placeholder="85"
-                value={formData.visualFieldExamination}
+                id="nitrit"
+                name="nitrit"
+                placeholder="Negative"
+                value={formData.nitrit}
                 onChange={handleChange}
               />
             </div>
             <div className="max-w-xs">
-              <label htmlFor="nightVisionExamination" className="block mb-1">
-                Night Vision Examination:
+              <label htmlFor="leukocyteUrine" className="block mb-1">
+                Leukocyte Urine (hpf):
               </label>
-              <RadioButton
-                id="nightVisionNormal"
-                name="nightVisionExamination"
-                value="Normal"
-                checked={formData.nightVisionExamination === "Normal"}
+              <InputField
+                id="leukocyteUrine"
+                name="leukocyteUrine"
+                placeholder="15"
+                value={formData.leukocyteUrine}
                 onChange={handleChange}
-                label="Normal"
-              />
-              <RadioButton
-                id="nightVisionAbnormal"
-                name="nightVisionExamination"
-                value="Abnormal"
-                checked={formData.nightVisionExamination === "Abnormal"}
-                onChange={handleChange}
-                label="Abnormal"
-              />
-            </div>
-          </div>
-
-          <div className="md:col-span-1 border-2 rounded-md p-4">
-            <div className="max-w-xs pb-5">
-              <label htmlFor="colorVisionExamination" className="block mb-1">
-                Color Vision Examination:
-              </label>
-              <RadioButton
-                id="colorVisionNormal"
-                name="colorVisionExamination"
-                value="Normal"
-                checked={formData.colorVisionExamination === "Normal"}
-                onChange={handleChange}
-                label="Normal"
-              />
-              <RadioButton
-                id="colorVisionAbnormal"
-                name="colorVisionExamination"
-                value="Abnormal"
-                checked={formData.colorVisionExamination === "Abnormal"}
-                onChange={handleChange}
-                label="Abnormal"
               />
             </div>
             <div className="max-w-xs">
-              <label htmlFor="hearingExamination" className="block mb-1">
-                Hearing Examination:
+              <label htmlFor="bloodurine" className="block mb-1">
+                Blood Urine:
               </label>
-              <RadioButton
-                id="hearingNormal"
-                name="hearingExamination"
-                value="Normal"
-                checked={formData.hearingExamination === "Normal"}
-                onChange={handleChange}
-                label="Normal"
-              />
-              <RadioButton
-                id="hearingAbnormal"
-                name="hearingExamination"
-                value="Abnormal"
-                checked={formData.hearingExamination === "Abnormal"}
-                onChange={handleChange}
-                label="Abnormal"
-              />
               <InputField
-                id="hearingExaminationInput"
-                name="hearingExamination"
-                placeholder="Keterangan/ Description"
-                value={formData.hearingExamination}
+                id="bloodurine"
+                name="bloodurine"
+                placeholder="Negative"
+                value={formData.bloodurine}
                 onChange={handleChange}
               />
             </div>
-            <div className="max-w-xs pb-5">
-              <label htmlFor="bloodExamination" className="block mb-1">
-                Blood Examination:
+            <div className="max-w-xs">
+              <label htmlFor="glucoseUrine" className="block mb-1">
+                Glucose Urine (hpf):
               </label>
-              <RadioButton
-                id="bloodExaminationNormal"
-                name="bloodExamination"
-                value="Normal"
-                checked={formData.bloodExamination === "Normal"}
+              <InputField
+                id="glucoseUrine"
+                name="glucoseUrine"
+                placeholder="2"
+                value={formData.glucoseUrine}
                 onChange={handleChange}
-                label="Normal"
               />
-              <RadioButton
-                id="bloodExaminationAbnormal"
-                name="bloodExamination"
-                value="Abnormal"
-                checked={formData.bloodExamination === "Abnormal"}
+            </div>
+            <div className="max-w-xs">
+              <label htmlFor="eritrositUrine" className="block mb-1">
+                Erythrocyte Urine (hpf):
+              </label>
+              <InputField
+                id="eritrositUrine"
+                name="eritrositUrine"
+                placeholder="3-5"
+                value={formData.eritrositUrine}
                 onChange={handleChange}
-                label="Abnormal"
+              />
+            </div>
+            <div className="max-w-xs">
+              <label htmlFor="eritrositSedimen" className="block mb-1">
+                Erythrocyte Sedimen (hpf):
+              </label>
+              <InputField
+                id="eritrositSedimen"
+                name="eritrositSedimen"
+                placeholder="0-1"
+                value={formData.eritrositSedimen}
+                onChange={handleChange}
+              />
+            </div>{" "}
+            <div className="max-w-xs">
+              <label htmlFor="leukositSedimen" className="block mb-1">
+                Leukocyte Sedimen (hpf):
+              </label>
+              <InputField
+                id="leukositSedimen"
+                name="leukositSedimen"
+                placeholder="2-4"
+                value={formData.leukositSedimen}
+                onChange={handleChange}
+              />
+            </div>{" "}
+            <div className="max-w-xs">
+              <label htmlFor="crystalUrine" className="block mb-1">
+                Crystal Urine:
+              </label>
+              <InputField
+                id="crystalUrine"
+                name="crystalUrine"
+                placeholder="Negative"
+                value={formData.crystalUrine}
+                onChange={handleChange}
               />
             </div>
           </div>
