@@ -53,16 +53,6 @@ const PatientLab = () => {
     const { name, value } = e.target;
     let newFormData = { ...formData, [name]: value };
 
-    // if (name === "weight" || name === "height") {
-    //   const weight = parseFloat(newFormData.weight);
-    //   const height = parseFloat(newFormData.height);
-
-    //   if (!isNaN(weight) && !isNaN(height) && height !== 0) {
-    //     const bmi = (weight / Math.pow(height / 100, 2)).toFixed(2); // Calculate BMI
-    //     newFormData = { ...newFormData, bmi };
-    //   }
-    // }
-
     setFormData(newFormData);
   };
 
@@ -119,7 +109,7 @@ const PatientLab = () => {
         });
 
         setTimeout(() => {
-          Navigate(`/dashboard/hasilanalisis/${id}`);
+          Navigate(`/dashboard/hasil-analisis/${id}`);
         }, 1500);
       } else {
         console.error("Failed to submit data:", response.data);
