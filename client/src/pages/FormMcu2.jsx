@@ -58,7 +58,7 @@ const PatientPhysiqueFormtwo = () => {
           title: "Success!",
           text: `Patient physique two form ${successMessage}!`,
           icon: "success",
-          confirmButtonText: "Ok",
+          showConfirmButton: false,
           timer: 1500,
         });
 
@@ -229,12 +229,20 @@ const PatientPhysiqueFormtwo = () => {
               Delete
             </button>
           </div>
-          <Link
-            to={`/dashboard/form-lab/${id}`}
-            className="bg-indigo-600 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-indigo-700 transition-all "
-          >
-            Next
-          </Link>
+          <div className="mt-6">
+            <Link
+              to={`/dashboard/form-mcu/${id}`}
+              className="bg-indigo-600 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-indigo-700 transition-all "
+            >
+              Back
+            </Link>
+            <Link
+              to={`/dashboard/form-lab/${id}`}
+              className="bg-indigo-600 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-indigo-700 transition-all "
+            >
+              Next
+            </Link>
+          </div>
         </div>
       </form>
     </div>
