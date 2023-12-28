@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import Swal from "sweetalert2";
-import * as Yup from "yup";
 
 const InputField = ({ id, name, placeholder, value, onChange }) => {
   return (
@@ -61,44 +60,6 @@ const PatientLab = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // validasi form
-    const validationSchema = Yup.object().shape({
-      hemoglobin: Yup.number().required("Hemoglobin is required!"),
-      hematocrit: Yup.number().required("Hematocrit is required!"),
-      leukocyte: Yup.number().required("Leukocyte is required!"),
-      trombocyte: Yup.number().required("Trombocyte is required!"),
-      erythrocyte: Yup.number().required("Erythrocyte is required!"),
-      mcv: Yup.number().required("MCV is required!"),
-      mch: Yup.number().required("MCH is required!"),
-      mchc: Yup.number().required("MCHC is required!"),
-      basofil: Yup.number().required("Basofil is required!"),
-      eosinofil: Yup.number().required("Eosinofil is required!"),
-      neutrofil: Yup.number().required("Neutrofil is required!"),
-      limfosit: Yup.number().required("Limfosit is required!"),
-      monosit: Yup.number().required("Monosit is required!"),
-      led: Yup.number().required("LED is required!"),
-      urinecolor: Yup.string().required("Urine Color is required!"),
-      urineph: Yup.number().required("Urine pH is required!"),
-      urineprotein: Yup.string().required("Urine Protein is required!"),
-      nitrit: Yup.string().required("Nitrit is required!"),
-      leukocyteUrine: Yup.number().required("Leukocyte Urine is required!"),
-      bloodurine: Yup.string().required("Blood Urine is required!"),
-      glucoseUrine: Yup.number().required("Glucose Urine is required!"),
-      eritrositUrine: Yup.number().required("Erythrocyte Urine is required!"),
-      eritrositSedimen: Yup.number().required(
-        "Erythrocyte Sedimen is required!"
-      ),
-      leukositSedimen: Yup.number().required("Leukocyte Sedimen is required!"),
-      crystalUrine: Yup.string().required("Crystal Urine is required!"),
-    });
-
-    const isValid = await validationSchema.validate(formData);
-
-    if (!isValid) {
-      console.error("Please fill in all required fields!");
-      return;
-    }
-
     try {
       let method,
         successMessage,
@@ -154,7 +115,8 @@ const PatientLab = () => {
 
         Swal.fire({
           icon: "success",
-          title: `Patient lab form ${successMessage}!`,
+          title: "Success!",
+          text: `Patient lab form ${successMessage}!`,
           showConfirmButton: false,
           timer: 1500,
         });
@@ -612,23 +574,33 @@ const PatientLab = () => {
           </div>
         </div>
 
-        <button
-          type="submit"
-          className={
-            isEdit
-              ? "bg-amber-500 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-amber-600 transition-all"
-              : "bg-blue-500 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-blue-600 transition-all"
-          }
-        >
-          {isEdit ? "Update" : "Submit"}
-        </button>
-        <button
-          type="button"
-          className="bg-red-500 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-red-600 transition-all "
-          onClick={handleDelete}
-        >
-          Delete
-        </button>
+        <div className="flex justify-between">
+          <div>
+            <button
+              type="submit"
+              className={
+                isEdit
+                  ? "bg-amber-500 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-amber-600 transition-all"
+                  : "bg-blue-500 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-blue-600 transition-all"
+              }
+            >
+              {isEdit ? "Update" : "Submit"}
+            </button>
+            <button
+              type="button"
+              className="bg-red-500 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-red-600 transition-all "
+              onClick={handleDelete}
+            >
+              Delete
+            </button>
+          </div>
+          <Link
+            to={`/dashboard/form-mcu2/${id}`}
+            className="bg-indigo-600 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-indigo-700 transition-all "
+          >
+            Back
+          </Link>
+        </div>
       </form>
     </div>
   );

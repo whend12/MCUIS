@@ -105,6 +105,13 @@ const PatientPhysiqueForm = () => {
 
     const isValid = await validationSchema.isValid(formData);
     if (!isValid) {
+      Swal.fire({
+        icon: "error",
+        title: `Error!`,
+        text: "Please fill in all required fields.",
+        showConfirmButton: false,
+        timer: 1500,
+      });
       console.error("Please fill in all required fields.");
       return;
     }
@@ -155,7 +162,8 @@ const PatientPhysiqueForm = () => {
 
         Swal.fire({
           icon: "success",
-          title: `Patient physique form ${successMessage}!`,
+          title: "Success!",
+          text: `Patient physique one form ${successMessage}!`,
           showConfirmButton: false,
           timer: 1500,
         });
@@ -561,12 +569,20 @@ const PatientPhysiqueForm = () => {
               Delete
             </button>
           </div>
-          <Link
-            to={`/dashboard/form-mcu2/${id}`}
-            className="bg-indigo-600 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-indigo-700 transition-all "
-          >
-            Next
-          </Link>
+          <div className="mt-6">
+            <Link
+              to={`/dashboard/lists`}
+              className="bg-indigo-600 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-indigo-700 transition-all "
+            >
+              Back
+            </Link>
+            <Link
+              to={`/dashboard/form-mcu2/${id}`}
+              className="bg-indigo-600 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-indigo-700 transition-all "
+            >
+              Next
+            </Link>
+          </div>
         </div>
       </form>
     </div>
