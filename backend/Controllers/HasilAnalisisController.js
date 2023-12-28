@@ -74,10 +74,10 @@ export const GetHasilAnalisisById = async (req, res) => {
   try {
     const hasilAnalisis = await HasilAnalisis.findAll({
       where: {
-        id: req.params.id,
+        PatientId: req.params.id,
       },
     });
-    res.json(hasilAnalisis[0]);
+    res.json(hasilAnalisis);
   } catch (error) {
     res.json({ message: error.message });
   }
@@ -108,19 +108,6 @@ export const DeleteHasilAnalisis = async (req, res) => {
     res.json({
       message: "HasilAnalisis Deleted",
     });
-  } catch (error) {
-    res.json({ message: error.message });
-  }
-};
-
-export const GetHasilAnalisisByPatientId = async (req, res) => {
-  try {
-    const hasilAnalisis = await HasilAnalisis.findAll({
-      where: {
-        PatientId: req.params.patientId,
-      },
-    });
-    res.json(hasilAnalisis);
   } catch (error) {
     res.json({ message: error.message });
   }

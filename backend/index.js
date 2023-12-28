@@ -18,6 +18,7 @@ dotenv.config();
 
 try {
   await database.authenticate();
+  await database.sync();
   console.log("Database Connected...");
 } catch (error) {
   console.log("Failed to Connect Database!");

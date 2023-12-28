@@ -9,6 +9,8 @@ import Sidebar from "./components/Sidebar.jsx";
 import FormMCU from "./pages/FormMcu.jsx";
 import FormMCU2 from "./pages/FormMcu2.jsx";
 import Queue from "./pages/Queue.jsx";
+import FormLab from "./pages/FormLab.jsx";
+import Result from "./pages/Result.jsx";
 
 const App = () => {
   const [login, setLogin] = useState(false);
@@ -37,6 +39,8 @@ const App = () => {
           <Route path="register" element={<PatientForm />} />
           <Route path="form-mcu/:id" element={<FormMCU />} />
           <Route path="form-mcu2/:id" element={<FormMCU2 />} />
+          <Route path="form-lab/:id" element={<FormLab />} />
+          <Route path="hasil-analisis/:id" element={<Result />} />
         </Route>
       </Routes>
     </BrowserRouter>

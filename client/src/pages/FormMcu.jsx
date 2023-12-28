@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Textarea } from "@material-tailwind/react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import axios from "axios";
+import Swal from "sweetalert2";
+import * as Yup from "yup";
 
 const InputField = ({ id, name, placeholder, value, onChange }) => {
   return (
@@ -38,6 +40,7 @@ const RadioButton = ({ id, name, value, checked, onChange, label }) => {
 
 const PatientPhysiqueForm = () => {
   const { id } = useParams();
+
   const [formData, setFormData] = useState({
     bmi: "",
     weight: "",
@@ -54,7 +57,10 @@ const PatientPhysiqueForm = () => {
     nightVisionExamination: "",
     colorVisionExamination: "",
     hearingExamination: "",
+    bloodExamination: "",
   });
+
+  const [isEdit, setIsEdit] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -77,59 +83,56 @@ const PatientPhysiqueForm = () => {
     e.preventDefault();
 
     // Validasi data sebelum mengirim
-    const requiredFields = [
-      "bmi",
-      "weight",
-      "height",
-      "bloodPressure",
-      "heartRate",
-      "complaint",
-      "distanceVisionExamination",
-      "distanceVisionExaminationWithGlasses",
-      "nearVisionExamination",
-      "bloodExamination",
-      // Tambahkan field lain yang diperlukan di sini
-    ];
-
-    const emptyFields = [];
-    requiredFields.forEach((field) => {
-      if (!formData[field] || formData[field].trim() === "") {
-        emptyFields.push(field);
-      }
+    const validationSchema = Yup.object().shape({
+      bmi: Yup.number().required("BMI is required"),
+      weight: Yup.number().required("Weight is required"),
+      height: Yup.number().required("Height is required"),
+      bloodPressure: Yup.string().required("Blood Pressure is required"),
+      heartRate: Yup.number().required("Heart Rate is required"),
+      complaint: Yup.string().required("Complaint is required"),
+      distanceVisionExamination: Yup.string().required(
+        "Distance Vision Examination is required"
+      ),
+      distanceVisionExaminationWithGlasses: Yup.string().required(
+        "Distance Vision Examination With Glasses is required"
+      ),
+      nearVisionExamination: Yup.string().required(
+        "Near Vision Examination is required"
+      ),
+      bloodExamination: Yup.string().required("Blood Examination is required"),
+      // Tambahkan validasi lain sesuai kebutuhan
     });
 
-    if (emptyFields.length > 0) {
-      console.error(
-        `Please fill in the following required fields: ${emptyFields.join(
-          ", "
-        )}`
-      );
-      return;
-    }
-
-    const isValid = requiredFields.every(
-      (field) => formData[field] && formData[field].trim() !== ""
-    );
-
+    const isValid = await validationSchema.isValid(formData);
     if (!isValid) {
       console.error("Please fill in all required fields.");
       return;
     }
 
     try {
-      const response = await axios.post(
-        `http://localhost:5000/api/v1/patient-physique/${id}`, // Menggunakan nilai id dari useParams
-        formData,
-        {
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      let method,
+        successMessage,
+        url = `http://localhost:5000/api/v1/patient-physique/${id}`; // Menggunakan nilai id dari useParams
+
+      if (isEdit) {
+        method = "put";
+        successMessage = "updated successfully";
+      } else {
+        method = "post";
+        successMessage = "submitted successfully";
+      }
+      const response = await axios({
+        method,
+        url,
+        headers: {
+          "Content-Type": "application/json",
+        },
+        data: formData,
+      });
 
       if (response.status === 200 || response.status === 201) {
         console.log("Data submitted successfully!");
-        setSubmitSuccess(true);
+
         // Lakukan redirect atau tampilkan pesan sukses
         setFormData({
           bmi: "",
@@ -148,6 +151,13 @@ const PatientPhysiqueForm = () => {
           colorVisionExamination: "",
           hearingExamination: "",
           bloodExamination: "",
+        });
+
+        Swal.fire({
+          icon: "success",
+          title: `Patient physique form ${successMessage}!`,
+          showConfirmButton: false,
+          timer: 1500,
         });
       } else {
         console.error("Failed to submit data:", response.data);
@@ -174,32 +184,94 @@ const PatientPhysiqueForm = () => {
     }
   };
 
+  const handleDelete = async (e) => {
+    e.preventDefault();
+
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonColor: "#d33",
+      reverseButtons: false,
+    }).then(async (result) => {
+      if (result.isConfirmed) {
+        try {
+          const response = await axios.delete(
+            `http://localhost:5000/api/v1/patient-physique/${id}`
+          );
+
+          if (response.status === 200) {
+            console.log("Data deleted successfully!");
+
+            Swal.fire({
+              title: "Success!",
+              text: "Patient physique form deleted successfully!",
+              icon: "success",
+              confirmButtonText: "Ok",
+              timer: 1500,
+            });
+
+            setFormData({
+              bmi: "",
+              weight: "",
+              height: "",
+              bloodPressure: "",
+              heartRate: "",
+              temperature: "",
+              respiration: "",
+              complaint: "",
+              distanceVisionExamination: "",
+              distanceVisionExaminationWithGlasses: "",
+              nearVisionExamination: "",
+              visualFieldExamination: "",
+              nightVisionExamination: "",
+              colorVisionExamination: "",
+              hearingExamination: "",
+              bloodExamination: "",
+            });
+          } else {
+            console.error("Failed to delete data.");
+          }
+        } catch (error) {
+          console.error("Error deleting data: ", error);
+        }
+      }
+    });
+  };
+
   useEffect(() => {
     const fetchPatientData = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/api/v1/patient/${id}`
+          `http://localhost:5000/api/v1/patient-physique/${id}`
         );
-        const patientData = await response.json();
+        if (response.ok) {
+          const patientData = await response.json();
 
-        setFormData({
-          bmi: patientData.bmi,
-          weight: patientData.weight,
-          height: patientData.height,
-          bloodPressure: patientData.bloodPressure,
-          heartRate: patientData.heartRate,
-          temperature: patientData.temperature,
-          respiration: patientData.respiration,
-          complaint: patientData.complaint,
-          distanceVisionExamination: patientData.distanceVisionExamination,
-          distanceVisionExaminationWithGlasses:
-            patientData.distanceVisionExaminationWithGlasses,
-          nearVisionExamination: patientData.nearVisionExamination,
-          visualFieldExamination: patientData.visualFieldExamination,
-          nightVisionExamination: patientData.nightVisionExamination,
-          colorVisionExamination: patientData.colorVisionExamination,
-          hearingExamination: patientData.hearingExamination,
-        });
+          setFormData({
+            bmi: patientData.bmi,
+            weight: patientData.weight,
+            height: patientData.height,
+            bloodPressure: patientData.bloodPressure,
+            heartRate: patientData.heartRate,
+            temperature: patientData.temperature,
+            respiration: patientData.respiration,
+            complaint: patientData.complaint,
+            distanceVisionExamination: patientData.distanceVisionExamination,
+            distanceVisionExaminationWithGlasses:
+              patientData.distanceVisionExaminationWithGlasses,
+            nearVisionExamination: patientData.nearVisionExamination,
+            visualFieldExamination: patientData.visualFieldExamination,
+            nightVisionExamination: patientData.nightVisionExamination,
+            colorVisionExamination: patientData.colorVisionExamination,
+            hearingExamination: patientData.hearingExamination,
+            bloodExamination: patientData.bloodExamination,
+          });
+
+          setIsEdit(true);
+        }
       } catch (error) {
         console.error("Error fetching patient data: ", error);
       }
@@ -208,21 +280,10 @@ const PatientPhysiqueForm = () => {
     fetchPatientData();
   }, [id]);
 
-  const [submitSuccess, setSubmitSuccess] = useState(false);
   return (
     <div className="w-full mx-auto p-6 rounded-md bg-white shadow-md">
       <h2 className="text-2xl font-semibold mb-4">Patient Physique Form</h2>
-      {submitSuccess && (
-        <div className="bg-green-200 text-green-800 px-4 py-2 mt-4 rounded-md absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center justify-between">
-          <p>Data submitted successfully!</p>
-          <button
-            onClick={() => setSubmitSuccess(false)}
-            className="text-sm text-green-900 hover:text-green-700 focus:outline-none"
-          >
-            Close
-          </button>
-        </div>
-      )}
+
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="md:col-span-1 border-2 rounded-md p-4">
@@ -480,12 +541,33 @@ const PatientPhysiqueForm = () => {
           </div>
         </div>
 
-        <button
-          type="submit"
-          className="bg-blue-500 text-white py-2 px-4 mt-4 rounded-md hover:bg-blue-600 transition-all"
-        >
-          Submit
-        </button>
+        <div className="flex justify-between">
+          <div>
+            <button
+              type="submit"
+              className={
+                isEdit
+                  ? "bg-amber-500 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-amber-600 transition-all"
+                  : "bg-blue-500 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-blue-600 transition-all"
+              }
+            >
+              {isEdit ? "Update" : "Submit"}
+            </button>
+            <button
+              type="button"
+              className="bg-red-500 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-red-600 transition-all "
+              onClick={handleDelete}
+            >
+              Delete
+            </button>
+          </div>
+          <Link
+            to={`/dashboard/form-mcu2/${id}`}
+            className="bg-indigo-600 text-white py-2 px-4 mt-4 mx-1 rounded-md hover:bg-indigo-700 transition-all "
+          >
+            Next
+          </Link>
+        </div>
       </form>
     </div>
   );
