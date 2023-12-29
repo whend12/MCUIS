@@ -99,15 +99,27 @@ export const UpdatePatientPhysiqueTwo = async (req, res) => {
 
 export const DeletePatientPhysiqueTwo = async (req, res) => {
   try {
-    await PatientPhysiqueTwo.destroy({
+    const { id } = req.params;
+
+    // Hapus entri HasilAnalisis yang terkait dengan PatientId dari PatientPhysiqueTwo
+    await HasilAnalisis.destroy({
       where: {
-        PatientId: req.params.id,
+        PatientId: id,
+        // Sesuaikan dengan nama entitas yang ingin dihapus
       },
     });
+
+    // Hapus entri PatientPhysiqueTwo
+    await PatientPhysiqueTwo.destroy({
+      where: {
+        PatientId: id,
+      },
+    });
+
     res.json({
-      message: "PatientPhysiqueTwo Deleted",
+      message: "PatientPhysiqueTwo analysis results deleted successfully",
     });
   } catch (error) {
-    res.json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };

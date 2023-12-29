@@ -3,13 +3,11 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Cookies from "universal-cookie";
 import { Link, Outlet } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import {
   ChevronLast,
   ChevronFirst,
-  LifeBuoy,
-  Receipt,
   Boxes,
-  Users,
   LayoutDashboard,
   SidebarIcon,
   UserPlus,
@@ -71,13 +69,19 @@ export default function Sidebar({ children }) {
                 <SidebarItem
                   icon={<LayoutDashboard size={20} />}
                   text="Dashboard"
-                  alert
                   openSidebar={openSidebar}
                 />
               </Link>
-              <SidebarItem icon={<Boxes size={20} />} text="Queue" />
+
+              <Link to="admin-queue" style={{ textDecoration: "none" }}>
+                <SidebarItem icon={<Boxes size={20} />} text="Queue" />
+              </Link>
+
               <Link to="lists" style={{ textDecoration: "none" }}>
-                <SidebarItem icon={<Users size={20} />} text="Patient List" />
+                <SidebarItem
+                  icon={<Stethoscope size={20} />}
+                  text="Patient List"
+                />
               </Link>
               <Link to="register" style={{ textDecoration: "none" }}>
                 <SidebarItem
@@ -85,12 +89,7 @@ export default function Sidebar({ children }) {
                   text="Patient Register"
                 />
               </Link>
-              <SidebarItem
-                icon={<Stethoscope size={20} />}
-                text="Medical Check Up "
-              />
-              <SidebarItem icon={<Receipt size={20} />} text="Report" />
-              <SidebarItem icon={<LifeBuoy size={20} />} text="Help" />
+
               <button onClick={Logout}>
                 <SidebarItem
                   icon={<SidebarIcon size={20} />}

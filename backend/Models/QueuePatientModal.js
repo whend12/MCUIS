@@ -3,8 +3,8 @@ import database from "../Config/Database.js";
 
 const { DataTypes } = Sequelize;
 
-const Queue = database.define(
-  "queues",
+const QueuePatient = database.define(
+  "queuePatients",
   {
     number_queue: {
       type: DataTypes.INTEGER,
@@ -16,4 +16,4 @@ const Queue = database.define(
   }
 );
 
-export default Queue;
+export default QueuePatient;

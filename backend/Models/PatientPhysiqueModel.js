@@ -80,6 +80,7 @@ const PatientPhysique = database.define(
         model: Patient,
         key: "id",
         field: "id",
+        onDelete: "CASCADE",
       },
     },
   },

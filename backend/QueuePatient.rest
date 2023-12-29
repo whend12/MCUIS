@@ -1,0 +1,28 @@
+// Pasien mengambil antrian
+GET http://localhost:5000/api/v1/patient-take-number/
+Content-Type: application/json
+
+{
+  
+}
+
+
+
+
+###
+// Reset Antrian
+DELETE  http://localhost:5000/api/v1/patient-reset-queue/
+Content-Type: application/json
+
+{
+    
+}
+
+###
+//get patient right now
+GET http://localhost:5000/api/v1/patient-get-current-number/
+Content-Type: application/json
+
+{
+    
+}

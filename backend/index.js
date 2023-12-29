@@ -2,6 +2,7 @@ import express from "express";
 import database from "./Config/Database.js";
 import UserRoutes from "./Routes/User.js";
 import QueueRoutes from "./Routes/Queue.js";
+import QueuePatientRoutes from "./Routes/QueuePatient.js";
 import PatientRoutes from "./Routes/Patient.js";
 import ConditionRoutes from "./Routes/Condition.js";
 import ConditionTwo from "./Routes/ConditionTwo.js";
@@ -18,7 +19,6 @@ dotenv.config();
 
 try {
   await database.authenticate();
-  await database.sync();
   console.log("Database Connected...");
 } catch (error) {
   console.log("Failed to Connect Database!");
@@ -32,6 +32,7 @@ app.use(
   "/api/v1/",
   UserRoutes,
   QueueRoutes,
+  QueuePatientRoutes,
   PatientRoutes,
   ConditionRoutes,
   HasilAnalisisRoutes,

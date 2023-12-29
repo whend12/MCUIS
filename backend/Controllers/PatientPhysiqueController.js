@@ -13,7 +13,7 @@ export const createPatientPhysique = async (req, res) => {
       ...req.body,
       PatientId: id,
     });
-
+    console.log(newPhysique);
     for (const key in hasilPengecekan) {
       await HasilAnalisis.create({
         name: key,
@@ -55,7 +55,6 @@ async function cekBatasAtas(inputUser) {
             };
           });
         } else if (userInput.includes("/")) {
-          // Menangani kasus khusus seperti "20/20"
           let kondisiTerpenuhi = groupedConditions[key].find((kondisi) => {
             return bandingkanPenglihatan(userInput, kondisi.upperLimit);
           });
@@ -68,15 +67,25 @@ async function cekBatasAtas(inputUser) {
           }
         } else {
           let nilaiInput = parseFloat(userInput);
-          let kondisiTerpenuhi = groupedConditions[key].find((kondisi) => {
+          let kondisiTerpenuhiUpper = groupedConditions[key].find((kondisi) => {
             let upperLimit = parseFloat(kondisi.upperLimit);
             return nilaiInput > upperLimit;
           });
 
-          if (kondisiTerpenuhi) {
+          let kondisiTerpenuhiLower = groupedConditions[key].find((kondisi) => {
+            let lowerLimit = parseFloat(kondisi.lowerLimit);
+            return nilaiInput < lowerLimit;
+          });
+
+          if (kondisiTerpenuhiUpper) {
             hasil[key] = {
-              message: `Nilai ${key} dalam kategori: ${kondisiTerpenuhi.status}`,
-              saran: kondisiTerpenuhi.saran,
+              message: `Nilai ${key} dalam kategori: ${kondisiTerpenuhiUpper.status}`,
+              saran: kondisiTerpenuhiUpper.saran,
+            };
+          } else if (kondisiTerpenuhiLower) {
+            hasil[key] = {
+              message: `Nilai ${key} dalam kategori: ${kondisiTerpenuhiLower.status}`,
+              saran: kondisiTerpenuhiLower.saran,
             };
           }
         }
@@ -85,7 +94,7 @@ async function cekBatasAtas(inputUser) {
 
     return hasil;
   } catch (error) {
-    // Error handling
+    console.log(error);
   }
 }
 
@@ -157,6 +166,8 @@ export const updatePatientPhysique = async (req, res) => {
 export const deletePatientPhysiqueById = async (req, res) => {
   try {
     const { id } = req.params;
+
+    // Temukan entri PatientPhysique yang sesuai
     const patientPhysique = await PatientPhysique.findOne({
       where: {
         PatientId: id,
@@ -167,9 +178,20 @@ export const deletePatientPhysiqueById = async (req, res) => {
       return res.status(404).json({ message: "PatientPhysique not found" });
     }
 
+    // Hapus entri terkait dari tabel PatientPhysique
     await patientPhysique.destroy();
 
-    res.json({ message: "PatientPhysique deleted successfully" });
+    // Hapus entri terkait dari tabel HasilAnalisis
+    await HasilAnalisis.destroy({
+      where: {
+        PatientId: id,
+      },
+    });
+
+    res.json({
+      message:
+        "PatientPhysique and related analysis results deleted successfully",
+    });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

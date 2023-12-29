@@ -52,19 +52,24 @@ async function cekBatasAtas(inputUser) {
       if (inputUserLowercase.hasOwnProperty(key)) {
         let nilaiInput = parseFloat(inputUserLowercase[key]);
         let upperLimit = parseFloat(kondisi.upperLimit);
+        let lowerLimit = parseFloat(kondisi.lowerLimit);
 
         if (nilaiInput > upperLimit) {
           hasil[key] = {
             message: `Nilai ${key} dalam kategori: ${kondisi.status}`,
             saran: kondisi.saran,
           };
+        } else if (nilaiInput < lowerLimit) {
+          hasil[key] = {
+            message: `Nilai ${key} dalam kategori: Below Lower Limit`,
+            saran: kondisi.saran,
+          };
         }
       }
     });
-
     return hasil;
   } catch (error) {
-    // Error handling
+    res.status(500).json({ message: error.message });
   }
 }
 
@@ -92,28 +97,84 @@ export const GetPatientLabById = async (req, res) => {
 
 export const UpdatePatientLab = async (req, res) => {
   try {
-    await PatientLab.update(req.body, {
+    const { id } = req.params;
+    const input = req.body;
+
+    // Ambil data HasilAnalisis sebelumnya terkait dengan PatientId
+    const previousAnalysis = await HasilAnalisis.findAll({
       where: {
-        PatientId: req.params.id,
+        PatientId: id,
       },
     });
-    res.json({
-      message: "PatientLab Updated",
+
+    // Hapus terlebih dahulu entri HasilAnalisis yang terkait dengan PatientId
+    await HasilAnalisis.destroy({
+      where: {
+        PatientId: id,
+      },
     });
+
+    const hasilPengecekan = await cekBatasAtas(input);
+
+    for (const key in hasilPengecekan) {
+      const analysisResult = hasilPengecekan[key];
+
+      if (analysisResult !== undefined && analysisResult !== null) {
+        await HasilAnalisis.create({
+          name: key,
+          saran: analysisResult.saran,
+          kesimpulan: "Tidak ada kesimpulan",
+          PatientId: id,
+        });
+      }
+    }
+
+    // Proses pemantauan dan penghapusan saran yang berubah dari abnormal ke normal
+    previousAnalysis.forEach(async (prevAnalysis) => {
+      const currentKey = prevAnalysis.name;
+      const currentResult = hasilPengecekan[currentKey];
+
+      // Jika hasil sebelumnya adalah abnormal dan sekarang berubah menjadi normal, hapus entri HasilAnalisis terkait
+      if (
+        prevAnalysis.saran !== null &&
+        currentResult !== undefined &&
+        currentResult.saran === null
+      ) {
+        await HasilAnalisis.destroy({
+          where: {
+            name: currentKey,
+            PatientId: id,
+          },
+        });
+      }
+    });
+
+    res.json({ message: "PatientLab updated successfully" });
   } catch (error) {
-    res.json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 };
 
 export const DeletePatientLab = async (req, res) => {
   try {
+    const patientId = req.params.id;
+
+    // Hapus data dari tabel PatientLab
     await PatientLab.destroy({
       where: {
-        PatientId: req.params.id,
+        PatientId: patientId,
       },
     });
+
+    // Hapus entri terkait dari tabel HasilAnalisis
+    await HasilAnalisis.destroy({
+      where: {
+        PatientId: patientId,
+      },
+    });
+
     res.json({
-      message: "PatientLab Deleted",
+      message: "PatientLab and related analysis results deleted",
     });
   } catch (error) {
     res.json({ message: error.message });

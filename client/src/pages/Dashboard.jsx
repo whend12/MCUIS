@@ -8,11 +8,15 @@ const Dashboard = () => {
   const [token, setToken] = useState("");
   const [expire, setExpire] = useState("");
   const [users, setUsers] = useState([]);
+  const [patients, setPatients] = useState([]);
+  const [queueToday, setQueueToday] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
     refreshToken();
     getUsers();
+    getPatients();
+    getQueueToday();
   }, []);
 
   const refreshToken = async () => {
@@ -62,6 +66,38 @@ const Dashboard = () => {
       navigate("/"); // Redirect to login on error
     }
   };
+
+  const getPatients = async () => {
+    try {
+      const response = await axiosInstance.get(
+        "http://localhost:5000/api/v1/patient",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setPatients(response.data);
+    } catch (error) {
+      navigate("/"); // Redirect to login on error
+    }
+  };
+  const totalPatients = patients.length;
+
+  const getQueueToday = async () => {
+    try {
+      const response = await axiosInstance.get(
+        "http://localhost:5000/api/v1/patient-get-current-number/",
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setQueueToday(response.data.number_queue);
+    } catch (error) {}
+  };
+
   return (
     <div className="container w-full mt-3">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 m-3">
@@ -70,7 +106,9 @@ const Dashboard = () => {
             <h2 className="text-lg font-semibold text-gray-700 capitalize">
               Total Patient
             </h2>
-            <p className="mt-2 text-2xl font-bold text-gray-700">SOON</p>
+            <p className="mt-2 text-2xl font-bold text-gray-700">
+              {totalPatients}
+            </p>
           </div>
         </div>
         <div className="col-span-1 md:col-span-2 lg:col-span-1 bg-purple-300 rounded-lg shadow divide-y divide-gray-300">
@@ -78,7 +116,9 @@ const Dashboard = () => {
             <h2 className="text-lg font-semibold text-gray-700 capitalize">
               Total Queue Today
             </h2>
-            <p className="mt-1 text-2xl font-bold text-gray-700">SOON</p>
+            <p className="mt-1 text-2xl font-bold text-gray-700">
+              {queueToday}
+            </p>
           </div>
         </div>
         <div className="col-span-1 md:col-span-2 lg:col-span-1 bg-indigo-200 rounded-lg shadow divide-y divide-gray-300">

@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Pagination from "@mui/material/Pagination";
+import "react-datepicker/dist/react-datepicker.css";
+import DatePicker from "react-datepicker";
 import Stack from "@mui/material/Stack";
+
 import { Menu } from "@headlessui/react";
 import axios from "axios";
-import { Trash2, Pencil, Library } from "lucide-react";
+import { Trash2, Pencil, Library, Search } from "lucide-react";
 
 const PatientList = () => {
   const [patients, setPatients] = useState([]);
@@ -13,10 +16,23 @@ const PatientList = () => {
   const [selectedPatient, setSelectedPatient] = useState(null);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editPatientData, setEditPatientData] = useState({});
-  const patientsPerPage = 5;
+  const [searchTerm, setSearchTerm] = useState("");
+  const [patientsPerPage, setPatientsPerPage] = useState(5);
+  const [filteredPatients, setFilteredPatients] = useState([]);
 
   useEffect(() => {
-    getPatients();
+    const fetchPatients = async () => {
+      try {
+        const response = await axios.get(
+          "http://localhost:5000/api/v1/patient"
+        );
+        setPatients(response.data);
+        setFilteredPatients(response.data);
+      } catch (error) {
+        console.error("Error fetching patients:", error);
+      }
+    };
+    fetchPatients();
   }, []);
 
   const openDetailsModal = (patient) => {
@@ -24,12 +40,11 @@ const PatientList = () => {
     setShowDetailsModal(true);
   };
 
-  // const closeUpdateModal = () => {
-  //   setShowUpdateModal(false);
-  //   setUpdatePatientData({});
-  // };
-
-  // Inside the handleUpdate function:
+  const handleRowsPerPage = (event) => {
+    const rowsPerPage = parseInt(event.target.value, 10);
+    setPatientsPerPage(rowsPerPage);
+    setCurrentPage(1);
+  };
 
   const handleDelete = async (id) => {
     try {
@@ -44,24 +59,27 @@ const PatientList = () => {
     try {
       const response = await axios.get("http://localhost:5000/api/v1/patient");
       setPatients(response.data);
+      setFilteredPatients(response.data);
     } catch (error) {
       console.error("Error fetching patients:", error);
     }
   };
 
-  // Calculate the index range for the current page
-  const indexOfLastPatient = currentPage * patientsPerPage;
-  const indexOfFirstPatient = indexOfLastPatient - patientsPerPage;
-  const currentPatients = patients.slice(
-    indexOfFirstPatient,
-    indexOfLastPatient
-  );
+  const handleSearch = () => {
+    const filtered = patients.filter((patient) =>
+      patient.name.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredPatients(filtered);
+  };
 
+  const handleReset = () => {
+    setSearchTerm("");
+    setFilteredPatients(patients);
+  };
   const closeDetailsModal = () => {
     setShowDetailsModal(false);
     setSelectedPatient(null);
   };
-  // Handle page change
   const handlePageChange = (event, newPage) => {
     setCurrentPage(newPage);
   };
@@ -94,7 +112,27 @@ const PatientList = () => {
             <p className="text-gray-400 text-xs pt-0.5">
               List of patients registered
             </p>
-            {/* Adjusted text size */}
+            <div className="mb-3 flex justify-end">
+              <input
+                type="text"
+                placeholder="Search by Name"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="border rounded-md p-2 mr-2 outline-none"
+              />
+              <button
+                onClick={handleSearch}
+                className="bg-blue-500 text-white py-2 px-4 rounded-md mr-2 hover:bg-blue-600"
+              >
+                <Search />
+              </button>
+              <button
+                onClick={handleReset}
+                className="bg-gray-300 text-gray-700 py-2 px-4 rounded-md hover:bg-gray-400"
+              >
+                Reset
+              </button>
+            </div>
           </header>
           <div className="p-3">
             <div className="overflow-x-auto">
@@ -125,45 +163,86 @@ const PatientList = () => {
                   <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-gray-800 bg-opacity-50">
                     <div className="modal-container bg-white w-96 rounded shadow-lg z-50 overflow-y-auto p-6">
                       <h2 className="text-2xl font-bold mb-4">Edit Patient</h2>
+                      <div className="mb-3">
+                        Name
+                        <input
+                          type="text"
+                          placeholder="Name"
+                          className="border rounded-md p-2 mb-2 w-full"
+                          value={editPatientData.name || ""}
+                          onChange={(e) =>
+                            setEditPatientData({
+                              ...editPatientData,
+                              name: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
 
-                      <input
-                        type="text"
-                        placeholder="Name"
-                        className="border rounded-md p-2 mb-2 w-full"
-                        value={editPatientData.name || ""}
-                        onChange={(e) =>
-                          setEditPatientData({
-                            ...editPatientData,
-                            name: e.target.value,
-                          })
-                        }
-                      />
-
-                      <input
-                        type="text"
-                        placeholder="Gender"
-                        className="border rounded-md p-2 mb-2 w-full"
-                        value={editPatientData.gender || ""}
-                        onChange={(e) =>
-                          setEditPatientData({
-                            ...editPatientData,
-                            gender: e.target.value,
-                          })
-                        }
-                      />
-
-                      <input
-                        type="text"
-                        placeholder="Age"
-                        className="border rounded-md p-2 mb-2 w-full"
-                        value={editPatientData.age || ""}
-                        onChange={(e) =>
-                          setEditPatientData({
-                            ...editPatientData,
-                            age: e.target.value,
-                          })
-                        }
-                      />
+                      <div className="mb-3">
+                        Age
+                        <input
+                          type="text"
+                          placeholder="Age"
+                          className="border rounded-md p-2 mb-2 w-full"
+                          value={editPatientData.age || ""}
+                          onChange={(e) =>
+                            setEditPatientData({
+                              ...editPatientData,
+                              age: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="mb-3">
+                        Phone Number
+                        <input
+                          type="text"
+                          placeholder="08 ..."
+                          className="border rounded-md p-2 mb-2 w-full"
+                          value={editPatientData.phone || ""}
+                          onChange={(e) =>
+                            setEditPatientData({
+                              ...editPatientData,
+                              phone: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="mb-3">
+                        Gender
+                        <input
+                          type="text"
+                          placeholder="Gender"
+                          className="border rounded-md p-2 mb-2 w-full"
+                          value={editPatientData.gender || ""}
+                          onChange={(e) =>
+                            setEditPatientData({
+                              ...editPatientData,
+                              gender: e.target.value,
+                            })
+                          }
+                        />
+                      </div>
+                      <div className="mb-3">
+                        Birthdate
+                        <DatePicker
+                          selected={new Date(editPatientData.birthdate)}
+                          dateFormat="MM/dd/yyyy"
+                          className="h-10 border mt-1 rounded px-4 w-full bg-gray-50"
+                          placeholderText="MM/DD/YYYY"
+                          showYearDropdown
+                          scrollableYearDropdown
+                          showMonthDropdown
+                          scrollableMonthYearDropdown
+                          onChange={(date) =>
+                            setEditPatientData({
+                              ...editPatientData,
+                              birthdate: date,
+                            })
+                          }
+                        />
+                      </div>
 
                       <button
                         className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
@@ -181,100 +260,128 @@ const PatientList = () => {
                   </div>
                 )}
                 <tbody className="text-sm divide-y divide-gray-100">
-                  {currentPatients.map((patient, index) => (
-                    <tr key={index}>
-                      <td className="p-2 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="font-medium text-gray-800">
-                            {patient.id}
+                  {filteredPatients
+                    .slice(
+                      (currentPage - 1) * patientsPerPage,
+                      currentPage * patientsPerPage
+                    )
+                    .map((patient, index) => (
+                      <tr key={index}>
+                        <td className="p-2 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="font-medium text-gray-800">
+                              {patient.id}
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="p-2 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <div className="font-medium text-gray-800">
-                            {patient.name}
+                        </td>
+                        <td className="p-2 whitespace-nowrap">
+                          <div className="flex items-center">
+                            <div className="font-medium text-gray-800">
+                              {patient.name}
+                            </div>
                           </div>
-                        </div>
-                      </td>
-                      <td className="p-2 whitespace-nowrap">
-                        <div className="text-left">{patient.gender}</div>
-                      </td>
-                      <td className="p-2 whitespace-nowrap">
-                        <div className="text-left font-medium text-green-500">
-                          {patient.age}
-                        </div>
-                      </td>
-                      <td className="p-2 whitespace-nowrap">
-                        <div className="text-lg text-center">
-                          {new Date(patient.createdAt).toLocaleString("en-ID", {
-                            timeZone: "Asia/Jakarta",
-                          })}
-                        </div>
-                      </td>
-                      <td className="p-2 whitespace-nowrap">
-                        <button
-                          onClick={() => openDetailsModal(patient)}
-                          className="text-blue-500 hover:underline"
-                        >
-                          Details
-                        </button>
-                      </td>
-                      <td className="p-2 whitespace-nowrap rounded-md border-inherit">
-                        <button
-                          onClick={() => openEditModal(patient)} // Memanggil fungsi openEditModal saat ikon diklik
-                          className="text-yellow-500 hover:underline"
-                        >
-                          <Pencil />
-                        </button>
-                      </td>
-                      <td className="p-2 whitespace-nowrap rounded-md border-inherit">
-                        <button
-                          onClick={() => handleDelete(patient.id)}
-                          className="text-red-500 hover:underline"
-                        >
-                          <Trash2 />
-                        </button>
-                      </td>
-                      <td className="p-2 whitespace-nowrap rounded-md border-inherit">
-                        <Menu
-                          as="div"
-                          className="relative inline-block text-left"
-                        >
-                          <div>
-                            <Menu.Button className="">
-                              <Library />
-                            </Menu.Button>
+                        </td>
+                        <td className="p-2 whitespace-nowrap">
+                          <div className="text-left">{patient.gender}</div>
+                        </td>
+                        <td className="p-2 whitespace-nowrap">
+                          <div className="text-left font-medium text-green-500">
+                            {patient.age}
                           </div>
-                          <Menu.Items className="absolute right-0 z-10 w-48 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg focus:outline-none">
-                            <Menu.Item>
-                              <Link to={`/dashboard/form-mcu/${patient.id}`}>
-                                <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                  Fill Form MCU
-                                </button>
-                              </Link>
-                            </Menu.Item>
-                            <Menu.Item>
-                              <Link
-                                to={`/dashboard/hasil-analisis/${patient.id}`}
-                              >
-                                <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                  Show Analysis Result
-                                </button>
-                              </Link>
-                            </Menu.Item>
-                          </Menu.Items>
-                        </Menu>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="p-2 whitespace-nowrap">
+                          <div className="text-lg text-center">
+                            {new Date(patient.createdAt).toLocaleString(
+                              "en-ID",
+                              {
+                                timeZone: "Asia/Jakarta",
+                              }
+                            )}
+                          </div>
+                        </td>
+                        <td className="p-2 whitespace-nowrap">
+                          <button
+                            onClick={() => openDetailsModal(patient)}
+                            className="text-blue-500 hover:underline"
+                          >
+                            Details
+                          </button>
+                        </td>
+                        <td className="p-2 whitespace-nowrap rounded-md border-inherit">
+                          <button
+                            onClick={() => openEditModal(patient)} // Memanggil fungsi openEditModal saat ikon diklik
+                            className="text-yellow-500 hover:underline"
+                          >
+                            <Pencil />
+                          </button>
+                        </td>
+                        <td className="p-2 whitespace-nowrap rounded-md border-inherit">
+                          <button
+                            onClick={() => handleDelete(patient.id)}
+                            className="text-red-500 hover:underline"
+                          >
+                            <Trash2 />
+                          </button>
+                        </td>
+                        <td className="p-2 whitespace-nowrap rounded-md border-inherit">
+                          <Menu
+                            as="div"
+                            className="relative inline-block text-left"
+                          >
+                            <div>
+                              <Menu.Button className="">
+                                <Library />
+                              </Menu.Button>
+                            </div>
+                            <Menu.Items className="absolute right-0 z-10 w-48 mt-2 origin-top-right bg-white border border-gray-200 divide-y divide-gray-100 rounded-md shadow-lg focus:outline-none">
+                              <Menu.Item>
+                                <Link to={`/dashboard/form-mcu/${patient.id}`}>
+                                  <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    Fill Form MCU
+                                  </button>
+                                </Link>
+                              </Menu.Item>
+                              <Menu.Item>
+                                <Link
+                                  to={`/dashboard/hasil-analisis/${patient.id}`}
+                                >
+                                  <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    Show Analysis Result
+                                  </button>
+                                </Link>
+                              </Menu.Item>
+                            </Menu.Items>
+                          </Menu>
+                        </td>
+                      </tr>
+                    ))}
                 </tbody>
               </table>
             </div>
             <Stack
               spacing={2}
+              direction="row"
+              alignItems="center"
+              justifyContent="flex-end"
               className="flex flex-row items-center justify-between my-4"
             >
+              <div className="flex items-center">
+                <label htmlFor="rowsPerPage" className="mr-2">
+                  Rows per page:
+                </label>
+                <select
+                  id="rowsPerPage"
+                  name="rowsPerPage"
+                  onChange={handleRowsPerPage}
+                  value={patientsPerPage}
+                  className="border rounded-md p-2"
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={15}>15</option>
+                </select>
+              </div>
+
               <Pagination
                 count={Math.ceil(patients.length / patientsPerPage)}
                 page={currentPage}
@@ -310,23 +417,68 @@ const PatientList = () => {
                         </svg>
                       </div>
                     </div>
-                    <p>Name: {selectedPatient.name}</p>
-                    <p>Age: {selectedPatient.age}</p>
-                    <p>Phone Number: {selectedPatient.phone}</p>
-                    <p>Gender: {selectedPatient.gender}</p>
-                    <p>
-                      Birthdate:{" "}
-                      {
-                        selectedPatient.birthdate
-                          .toLocaleString("en-ID", {
-                            timeZone: "Asia/Jakarta",
-                          })
-                          .split("T")[0]
-                      }
-                    </p>
-
-                    <p>Address: {selectedPatient.address}</p>
-                    <p>Blood Type: {selectedPatient.bloodtype}</p>
+                    <table className="border-collapse border border-gray-300 w-full">
+                      <tbody>
+                        <tr>
+                          <td className="border border-gray-300 p-2">Name:</td>
+                          <td className="border border-gray-300 p-2">
+                            {selectedPatient.name}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-300 p-2">Age:</td>
+                          <td className="border border-gray-300 p-2">
+                            {selectedPatient.age}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-300 p-2">
+                            Phone Number:
+                          </td>
+                          <td className="border border-gray-300 p-2">
+                            {selectedPatient.phone}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-300 p-2">
+                            Gender:
+                          </td>
+                          <td className="border border-gray-300 p-2">
+                            {selectedPatient.gender}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-300 p-2">
+                            Birthdate:
+                          </td>
+                          <td className="border border-gray-300 p-2">
+                            {
+                              selectedPatient.birthdate
+                                .toLocaleString("en-ID", {
+                                  timeZone: "Asia/Jakarta",
+                                })
+                                .split("T")[0]
+                            }
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-300 p-2">
+                            Address:
+                          </td>
+                          <td className="border border-gray-300 p-2">
+                            {selectedPatient.address}
+                          </td>
+                        </tr>
+                        <tr>
+                          <td className="border border-gray-300 p-2">
+                            Blood Type:
+                          </td>
+                          <td className="border border-gray-300 p-2">
+                            {selectedPatient.bloodtype}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               </div>

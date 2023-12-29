@@ -29,7 +29,7 @@ Content-Type: application/json
 
 ###
 // Endpoint for get All Patient
-GET http://localhost:5000/api/v1/patient/
+GET http://localhost:5000/api/v1/patient/:id
 Content-Type: application/json
 
 {

@@ -5,7 +5,7 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import * as Yup from "yup";
 
-const InputField = ({ id, name, placeholder, value, onChange }) => {
+const InputField = ({ id, name, placeholder, value, onChange, readOnly }) => {
   return (
     <input
       type="text"
@@ -14,6 +14,7 @@ const InputField = ({ id, name, placeholder, value, onChange }) => {
       placeholder={placeholder}
       value={value}
       onChange={onChange}
+      readOnly={readOnly} // Menambahkan properti readOnly ke dalam elemen input
       className="w-full bg-transparent border-b border-gray-400 py-2 px-3 focus:outline-none focus:border-blue-500"
     />
   );
@@ -304,7 +305,7 @@ const PatientPhysiqueForm = () => {
                 name="bmi"
                 value={formData.bmi}
                 onChange={handleChange}
-                disabled={formData.bmi !== ""}
+                readOnly={formData.bmi !== ""}
               />
             </div>
             <div className="max-w-xs">
